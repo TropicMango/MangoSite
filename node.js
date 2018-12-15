@@ -10,7 +10,7 @@ app.get('/nav.html', function (req, res) {
 });
 
 app.get('/style/include.js', function (req, res) {
-  res.sendFile('src/script/include.js', {root: __dirname});
+  res.sendFile('src/style/include.js', {root: __dirname});
 });
 
 
