@@ -1,7 +1,7 @@
 <html>
 	<head>
 		<title>Tropic Mango</title>
-		<!--<#include "head.ftl" />-->
+		<#include "head.ftl" />
 	</head>
 	<body>
 		This is my webpage!
