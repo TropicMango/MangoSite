@@ -3,7 +3,7 @@ var app = express();
 
 app.get('/', function (req, res) {
   
-  res.sendFile('../template/index.html', {root: __dirname});
+  res.sendFile('public/index.html', {root: path.dirname(__dirname)});
   //res.send('did i break this?');
 });
 
