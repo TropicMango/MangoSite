@@ -3,7 +3,7 @@ var app = express();
 
 app.get('/', function (req, res) {
   
-  res.sendFile('template/index.html', {root: __dirname});
+  res.sendFile('template/index.xml', {root: __dirname});
   //res.send('Mango site :3');
 });
 
