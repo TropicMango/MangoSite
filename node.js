@@ -9,7 +9,7 @@ app.get('/nav.html', function (req, res) {
   res.sendFile('src/template/nav.html', {root: __dirname});
 });
 
-app.get('/script/include.js', function (req, res) {
+app.get('/style/include.js', function (req, res) {
   res.sendFile('src/script/include.js', {root: __dirname});
 });
 
