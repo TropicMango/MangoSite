@@ -27,6 +27,7 @@
 		  background-color: #111;
 		}
 		ul {
+		  z-index: 3;
 		  height: 7%;
 		  list-style-type: none;
   		  margin: 0;
@@ -70,10 +71,22 @@
 		}
 		
 		.horizontal-scroll-wrapper {
-		  width: 100px;
+		  position:absolute;
+		  border: 1px solid red;
+		  width: 83vh;
 		  height: 100vw;
-		  overflow-y: auto;
+		  overflow-y: hidden;
 		  overflow-x: hidden;
+		  transform: rotate(-90deg) translateY(-83vh);
+  		  transform-origin: right top;
+		}
+		.horizontal-scroll-wrapper > div {
+		  border: 1px solid grey;
+		  width: 100vw;
+		  height: 83vh;
+		  transform-origin: right top;
+		  transform: rotate(90deg) translateY(calc(100vw - 83vh)) translateX( 83vh);
+		  margin: calc(100vw - 83vh) 0px;
 		}
 		
 	</style>
@@ -90,10 +103,8 @@
 		</ul>
 
 		<div class="center mainTitle">~ This is Tropic Mango ~</div>
-		<center>
-		<img class="displayImg" src="https://raw.githubusercontent.com/TropicMango/MangoSite/master/src/img/Mango.png">
-		</center>
-		<div class="horizontal-scroll-wrapper squares">
+		<font color="white">
+		<div class="horizontal-scroll-wrapper squares" id="gallery">
 			<div class="card"><h2>Card1</h2></div>
 			<div class="card"><h2>Card2</h2></div>
 			<div class="card"><h2>Card3</h2></div>
@@ -103,6 +114,16 @@
 			<div class="card"><h2>Card7</h2></div>
 			<div class="card"><h2>Card8</h2></div>
 			<div class="card"><h2>Card9</h2></div>
+			<div class="card"><h2>Card10</h2></div>
+			<div class="card"><h2>Card11</h2></div>
+			<div class="card"><h2>Card12</h2></div>
+			<div class="card"><h2>Card13</h2></div>
+			<div class="card"><h2>Card9</h2></div>
+			<div class="card"><h2>Card9</h2></div>
+			<div class="card"><h2>Card9</h2></div>
+			<div class="card"><h2>Card9</h2></div>
+			<div class="card"><h2>Card9</h2></div>
+			<div class="card"><h2>Card</h2></div>
 			<div class="card"><h2>Card9</h2></div>
 			<div class="card"><h2>Card9</h2></div>
 			<div class="card"><h2>Card9</h2></div>
@@ -117,20 +138,15 @@
 			<div class="card"><h2>Card9</h2></div>
 			<div class="card"><h2>Card9</h2></div>
 			<div class="card"><h2>Card9</h2></div>
+			<div class="card"><h2>Card23</h2></div>
 			<div class="card"><h2>Card9</h2></div>
-			<div class="card"><h2>Card9</h2></div>
-			<div class="card"><h2>Card9</h2></div>
-			<div class="card"><h2>Card9</h2></div>
-			<div class="card"><h2>Card9</h2></div>
-			<div class="card"><h2>Card9</h2></div>
-			<div class="card"><h2>Card9</h2></div>
-			<div class="card"><h2>Card9</h2></div>
-			<div class="card"><h2>Card9</h2></div>
-			<div class="card"><h2>Card9</h2></div>
-			<div class="card"><h2>Card9</h2></div>
-			<div class="card"><h2>Card9</h2></div>
-			
-			
-		</div>
+		</div> </font>
 	</body>
+	<script>
+		window.onscroll = function(ev) {
+			if ((window.innerHeight + window.scrollY) >= document.body.scrollHeight) {
+			  document.getElementById("gallery").style.overflowY = "auto";
+			}
+		};
+	</script>
 </html>
