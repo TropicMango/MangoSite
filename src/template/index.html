@@ -39,17 +39,14 @@
   		  position: sticky;
   		  top: 0;
 		}
-
 		li {
 		  float: left;
 		  box-sizing: border-box;
     	  border: 1px solid grey;
 		}
-
 		li:last-child {
 		  border-right: none;
 		}
-
 		li a {
 		  display: block;
 		  color: white;
@@ -57,11 +54,9 @@
 		  padding: 14px 16px;
 		  text-decoration: none;
 		}
-
 		li a:hover:not(.active) {
 		  background-color: #333;
 		}
-
 		.active {
 		  background-color: #4CAF50;
 		}
@@ -69,7 +64,6 @@
 		  color: white;
 		  font-size: 4em;
 		}
-		
 		.horizontal-scroll-wrapper {
 		  position:absolute;
 		  border: 1px solid red;
@@ -79,8 +73,12 @@
 		  overflow-x: hidden;
 		  transform: rotate(-90deg) translateY(-83vh);
   		  transform-origin: right top;
+  		  scroll-snap-type: mandatory;
+  		  scroll-snap-points-y: repeat(100vw);
+  	  	  scroll-snap-type: y mandatory;
 		}
 		.horizontal-scroll-wrapper > div {
+		  scroll-snap-align: start;
 		  border: 1px solid grey;
 		  width: 100vw;
 		  height: 83vh;
@@ -88,7 +86,9 @@
 		  transform: rotate(90deg) translateY(calc(100vw - 83vh)) translateX( 83vh);
 		  margin: calc(100vw - 83vh) 0px;
 		}
-		
+		.card {
+			text-align: center;
+		}
 	</style>
 	<head>
 		<title>Tropic Mango</title>
@@ -105,48 +105,23 @@
 		<div class="center mainTitle">~ This is Tropic Mango ~</div>
 		<font color="white">
 		<div class="horizontal-scroll-wrapper squares" id="gallery">
-			<div class="card"><h2>Card1</h2></div>
-			<div class="card"><h2>Card2</h2></div>
-			<div class="card"><h2>Card3</h2></div>
-			<div class="card"><h2>Card4</h2></div>
-			<div class="card"><h2>Card5</h2></div>
-			<div class="card"><h2>Card6</h2></div>
-			<div class="card"><h2>Card7</h2></div>
-			<div class="card"><h2>Card8</h2></div>
-			<div class="card"><h2>Card9</h2></div>
-			<div class="card"><h2>Card10</h2></div>
-			<div class="card"><h2>Card11</h2></div>
-			<div class="card"><h2>Card12</h2></div>
-			<div class="card"><h2>Card13</h2></div>
-			<div class="card"><h2>Card9</h2></div>
-			<div class="card"><h2>Card9</h2></div>
-			<div class="card"><h2>Card9</h2></div>
-			<div class="card"><h2>Card9</h2></div>
-			<div class="card"><h2>Card9</h2></div>
-			<div class="card"><h2>Card</h2></div>
-			<div class="card"><h2>Card9</h2></div>
-			<div class="card"><h2>Card9</h2></div>
-			<div class="card"><h2>Card9</h2></div>
-			<div class="card"><h2>Card9</h2></div>
-			<div class="card"><h2>Card9</h2></div>
-			<div class="card"><h2>Card9</h2></div>
-			<div class="card"><h2>Card9</h2></div>
-			<div class="card"><h2>Card9</h2></div>
-			<div class="card"><h2>Card9</h2></div>
-			<div class="card"><h2>Card9</h2></div>
-			<div class="card"><h2>Card9</h2></div>
-			<div class="card"><h2>Card9</h2></div>
-			<div class="card"><h2>Card9</h2></div>
-			<div class="card"><h2>Card9</h2></div>
-			<div class="card"><h2>Card23</h2></div>
-			<div class="card"><h2>Card9</h2></div>
+			<div class="card"><h2>Designer</h2></div>
+			<div class="card"><h2>Creator</h2></div>
+			<div class="card"><h2>Consumer</h2></div>
+			<div class="card"><h2>Admirer</h2></div>
+			<div class="card"><h2>Inventor</h2></div>
+			<div class="card"><h2>Player</h2></div>
 		</div> </font>
+		<font color="white" id="hehe"> Current rate: </font>
 	</body>
 	<script>
 		window.onscroll = function(ev) {
 			if ((window.innerHeight + window.scrollY) >= document.body.scrollHeight) {
-			  document.getElementById("gallery").style.overflowY = "auto";
+			  document.getElementById("gallery").style.overflowY = "scroll";
+			}else{
+			  document.getElementById("gallery").style.overflowY = "hidden";
 			}
+			document.getElementById("hehe").innerHTML = document.querySelector('#gallery').scrollTop;
 		};
 	</script>
 </html>
