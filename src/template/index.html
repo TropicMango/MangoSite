@@ -12,10 +12,10 @@
 	<head>
 		<title>Tropic Mango</title>
 	</head>
-	<script type='text/javascript' src="include.js"></script> 
+	<script src="jquery.js"></script>
 	<body>
 		<img src="Mango.png">
-		<div w3-include-html="nav.html"></div> 
+		<div id="includedContent"></div>
 		This is my webpage!<br>
 		This is my webpage!<br>
 		This is my webpage!<br>
@@ -74,6 +74,8 @@
 		This is my webpage!<br>
 	</body>
 	<script>
-		includeHTML();
-	</script>
+      $(function(){
+        $("#includedContent").load("nav.html");
+      });
+    </script>
 </html>
