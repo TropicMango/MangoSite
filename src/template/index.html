@@ -8,10 +8,41 @@
     		text-align: center;
     		background-color: #000000;
 		}
+		body {margin: 0;}
+
 		ul {
-		  position: -webkit-sticky; /* Safari */
-  		  position: sticky;
-  		  top: 0;
+		  height: 7%;
+		  list-style-type: none;
+  		  margin: 0;
+  		  padding: 0;
+  		  overflow: hidden;
+  		  background-color: #111;
+  		  width: 100%;
+		}
+
+		li {
+		  float: left;
+		  border-right:1px solid #bbb;
+		}
+
+		li:last-child {
+		  border-right: none;
+		}
+
+		li a {
+		  display: block;
+		  color: white;
+		  text-align: center;
+		  padding: 14px 16px;
+		  text-decoration: none;
+		}
+
+		li a:hover:not(.active) {
+		  background-color: #333;
+		}
+
+		.active {
+		  background-color: #4CAF50;
 		}
 	</style>
 	<head>
@@ -19,7 +50,11 @@
 	</head>
 	<body>
 		<img src="Mango.png">
-		<div id="includedContent"></div>
+		<ul>
+  		  <li><a class="active" href="#home">Home</a></li>
+  		  <li><a href="#news">News</a></li>
+  		  <li><a href="#contact">Contact</a></li>
+		</ul>
 		This is my webpage!<br>
 		This is my webpage!<br>
 		This is my webpage!<br>
@@ -189,10 +224,4 @@
 		This is my webpage!<br>
 		This is my webpage!<br>
 	</body>
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-	<script>
-      $(function(){
-        $("#includedContent").load("nav.html");
-      });
-    </script>
 </html>
