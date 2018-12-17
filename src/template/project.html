@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+	<link rel="stylesheet" type="text/css" href="nav.css">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+	<head>
+		<style>
+		  body {
+			margin: 0;
+			background-color: #111;
+			color: white;
+		  }
+		  .center {
+			text-align: center;
+		  }
+		  .projects-wrapper {
+		    scroll-snap-type: mandatory;
+    		scroll-snap-points-y: repeat(93vh);
+    		scroll-snap-type: y mandatory;
+		  }
+		  .projects-wrapper > div {
+		  	scroll-snap-align: start;
+		  	height: 93vh;
+		  	border: 1px solid grey;
+		  }
+		  .projects-wrapper > div > div > img {
+		  	width: 90%;
+		  	height: 93vh;
+		  	object-fit: contain;
+		  	text-align: center;
+		  	margin-left: auto;
+  			margin-right: auto;
+		  	display: block;
+		  }
+		  .play_btn {
+		    -webkit-transition-duration: 0.5s; /* Safari */
+			transition-duration: 0.5s;
+			background-color: Transparent;
+			color: white;
+			font-size: 2.5em;
+			padding: 12px 48px;
+			border: 1px solid white;
+			cursor: pointer;
+			text-align: center;
+			border-radius: 2em;
+		  }
+		  .play_btn:hover {background: #eee;}
+		</style>
+	</head>
+	<body>
+		<ul>
+  		  <li><a href="/">Home</a></li>
+  		  <li><a class="active"href="/game">Projects</a></li>
+  		  <li><a href="/contact">Contact</a></li>
+  		  <li style="float:right"><a href="about">About</a></li>
+		</ul>
+
+		<h1 class="center">~ Current Project ~</h1>
+		<div class="projects-wrapper">
+	      <div>
+			<div style="float:left; width: 60%">
+			  <img class="card_img" src="https://raw.githubusercontent.com/TropicMango/MangoSite/master/src/img/Shields_Up.png">
+			</div>
+			<div style="float:right; width: 40%; top: 50%; left: 60%; position: absolute;">
+			  <h1>Shields Up  *WIP*</h1>
+			  <p> As an lost adventurer you run around and <br>
+				pick up items to discover your endless potential </p>
+			  <button class="play_btn">Play</button><br>
+			</div>
+	      </div>
+		  <div>
+		    <img class="card_img" src="https://raw.githubusercontent.com/TropicMango/MangoSite/master/src/img/Designer.png">
+		  </div>
+		  <div>
+		    <img class="card_img" src="https://raw.githubusercontent.com/TropicMango/MangoSite/master/src/img/Designer.png">
+		  </div>
+		</div>
+
+	</body>
+</html>
