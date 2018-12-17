@@ -144,7 +144,7 @@
 			<div class="card" >
 				
 				<div style="position: relative; width: 100vw; height: 83vh;">
-					<img id="project_img" class="card_img" src="https://raw.githubusercontent.com/TropicMango/MangoSite/master/src/img/Inventor.png">
+					<img id="project_img" class="card_img" src="https://raw.githubusercontent.com/TropicMango/MangoSite/master/src/img/Project.png">
 					<h2 class="overlay_text">~ Learn More ~</h2>
 					<button class="btn center_btn">Projects</button><br>
 					<button class="btn bot_l_btn">Contact Me</button>
@@ -163,11 +163,28 @@
 		};
 		$(document).ready(function(){
 		  $("#project_img").hide();
+		  
 		  $(".center_btn").hover(function(){
-			  $("#project_img").fadeIn(1000);
+		  	  document.getElementById("project_img").src = "https://raw.githubusercontent.com/TropicMango/MangoSite/master/src/img/Project.png";
+			  $("#project_img").fadeIn("fast");
 			}, function(){
-			  $("#project_img").fadeOut(1000);
+			  $("#project_img").fadeOut("fast");
 		  });
+		  
+		  $(".bot_l_btn").hover(function(){
+		  	  document.getElementById("project_img").src = "https://raw.githubusercontent.com/TropicMango/MangoSite/master/src/img/About.png";
+			  $("#project_img").fadeIn("fast");
+			}, function(){
+			  $("#project_img").fadeOut("fast");
+		  });
+		  
+		  $(".bot_r_btn").hover(function(){
+		  	  document.getElementById("project_img").src = "https://raw.githubusercontent.com/TropicMango/MangoSite/master/src/img/Contact.jpeg";
+			  $("#project_img").fadeIn("fast");
+			}, function(){
+			  $("#project_img").fadeOut("fast");
+		  });
+		  
 		});
 	</script>
 </html>
