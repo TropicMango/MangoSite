@@ -1,5 +1,6 @@
 <html>
 	<link rel="stylesheet" type="text/css" href="nav.css">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 	<style>
 		::-webkit-scrollbar{width:2px;height:2px;}
 		::-webkit-scrollbar-button{width:2px;height:2px;}
@@ -9,14 +10,6 @@
 		.main_img {
     	  width: 100vw;
       	  height: 93vh;
-    	  overflow: hidden;
-    	  object-fit: contain;
-    	  text-align: center;
-    	  background-color: #000000;
-		}
-		.displayImg {
-    	  width: 83%;
-      	  height: 83%;
     	  overflow: hidden;
     	  object-fit: contain;
     	  text-align: center;
@@ -62,7 +55,8 @@
 		}*/
 		.mainTitle {
 		  color: white;
-		  font-size: 4em;
+		  font-size: 3.5em;
+		  margin: 0px -5px;
 		}
 		.horizontal-scroll-wrapper {
 		  position:absolute;
@@ -72,7 +66,7 @@
 		  height: calc(100vw - 6px);
 		  overflow-y: hidden;
 		  overflow-x: hidden;
-		  transform: rotate(-90deg) translateY(calc(-83vh - 6px));
+		  transform: rotate(-90deg) translateY(calc(-83vh - 1px));
   		  transform-origin: right top;
   		  scroll-snap-type: mandatory;
   		  scroll-snap-points-y: repeat(100vw);
@@ -88,25 +82,50 @@
 		  margin: calc(100vw - 83vh) 0px;
 		}
 		.card {
-			text-align: center;
+		  text-align: center;
 		}
 		.overlay_text {
-			position: absolute;
-		    top: 75%;
-		    left: 50%;
-		    transform: translate(-50%, -50%);
-		    font-size: 4em;
-		    color: white;
+		  position: absolute;
+		  top: 75%;
+		  left: 50%;
+		  transform: translate(-50%, -50%);
+		  font-size: 4em;
+		  color: white;
 		}
-		 .card_img {
-		 	width: 100vw;
-      	  	height: 83vh;
-    	  	overflow: hidden;
-    	  	object-fit: contain;
-    	  	text-align: center;
-    	  	background-color: #000;
-		 }
-		 .black {
+		.card_img {
+		  width: 100vw;
+      	  height: 83vh;
+    	  overflow: hidden;
+    	  object-fit: contain;
+    	  text-align: center;
+		}
+		 
+		.btn {
+		  -webkit-transition-duration: 0.5s; /* Safari */
+  		  transition-duration: 0.5s;
+		  text-align: center;
+		  border: 1px solid white;
+		  background-color: inherit;
+		  padding: 14px 28px;
+		  font-size: 16px;
+		  cursor: pointer;
+		  color: white;
+		  display: inline-block;
+		  font-size: 2em;
+		  margin: 10px 10px;
+		}
+		
+		.center_btn { 
+		  width: 80vw; 
+		}
+		
+		.bot_btn { 
+		  width: calc(40vw - 10px); 
+		}
+		
+		.btn:hover {background: #eee;}
+		 
+		.black {
 			color: black;
 		}
 	</style>
@@ -117,7 +136,7 @@
 		<img class="main_img" src="https://raw.githubusercontent.com/TropicMango/MangoSite/master/src/img/Mango.png">
 		<ul>
   		  <li><a class="active" href="#home">Home</a></li>
-  		  <li><a href="#news">News</a></li>
+  		  <li><a href="#news">Projects</a></li>
   		  <li><a href="#contact">Contact</a></li>
   		  <li style="float:right"><a href="#about">About</a></li>
 		</ul>
@@ -148,6 +167,14 @@
 				<img class="card_img" src="https://raw.githubusercontent.com/TropicMango/MangoSite/master/src/img/Player.png">
 				<h2 class="overlay_text">Player</h2>
 			</div>
+			<div class="card" background-color"#000">
+				<div style="margin-top: 12%;">
+					<button class="btn center_btn">Projects</button><br>
+					<button class="btn bot_btn">Contact Me</button>
+					<button class="btn bot_btn">About Me</button>
+					<h2 class="overlay_text">~ Learn More ~</h2>
+				</div>
+			</div>
 		</div> </font>
 		<!--<font color="white" id="hehe"> Current rate: </font>-->
 	</body>
@@ -160,5 +187,12 @@
 			}
 			//document.getElementById("hehe").innerHTML = document.querySelector('#gallery').scrollTop;
 		};
+		$(document).ready(function(){
+		  $(".center_btn").hover(function(){
+			$(this).css("color", "yellow");
+			}, function(){
+			$(this).css("color", "pink");
+		  });
+		});
 	</script>
 </html>
