@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jnlp spec="1.0+" codebase=
-"https://docs.oracle.com/javase/tutorialJWS/samples/deployment/webstart_ComponentArch_DynamicTreeDemo" 
-    href="dynamictree_webstart.jnlp">
+"https://raw.githubusercontent.com/TropicMango/MangoSite/master/src/app" 
+    href="UFO_webstart.jnlp">
     <information>
-        <title>Dynamic Tree Demo</title>
-        <vendor>Dynamic Team</vendor>
+        <title>UFO Game</title>
+        <vendor>Tropic Mango</vendor>
     </information>
     <resources>
         <!-- Application Resources -->
         <j2se version="1.7+"
               href="http://java.sun.com/products/autodl/j2se"/>
-        <jar href="DynamicTreeDemo.jar"
+        <jar href="UFO_GAME.jar"
             main="true" />
 
     </resources>
