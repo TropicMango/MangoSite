@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 	<link rel="stylesheet" type="text/css" href="https://raw.githack.com/TropicMango/MangoSite/master/src/template/nav.css">
+	<script src="http://www.java.com/js/deployJava.js"></script>
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 	<head>
 		<style>
@@ -54,9 +55,50 @@
 			border-radius: 2em;
 		  }
 		  .play_btn:hover {background: #eee;}
-		</style>
+		  .overlay {
+		    position: fixed;
+		    display: none;
+		    width: 100vw;
+		    height: 100vh;
+		    background-color: rgba(255,255,255,0.2);
+		    z-index:2;
+		  }
+		  .overlay_input {
+		    position: fixed;
+		    width: 90vw;
+		    height: 90vh;
+		    top: 8.5%;     left: 5%;
+		    background-color: rgba(192,192,192,1);
+		    z-index: 3;
+		    cursor: pointer;
+		    text-align: center;
+		    box-sizing: border-box;
+		    border: 4px solid grey;
+		    border-radius: 10px;
+		  } 
+		  .overlay_exit_btn {
+		    top: 10.5%; left: 92%;
+		    position: fixed;
+		    text-align: center;
+		    font-size: 0.5em;
+		    background: red;
+		    width: 3.5vh;
+		    height: 3.5vh;
+		    border: 2px solid grey;
+		    border-radius: 15%;
+		    color: white;
+		  }
+	</style>
 	</head>
 	<body>
+		<div id="gameOverlay" class="overlay">
+		 <div class="overlay_input">
+		   
+		   <button onclick="exit()" class="overlay_exit_btn"><b>x</b></button><br>
+		 </div>
+	   </div>
+	
+	
 		<ul>
   		  <li><a href="/">Home</a></li>
   		  <li><a class="active">Projects</a></li>
@@ -76,7 +118,7 @@
 			  <h1>Shields Up  *WIP*</h1>
 			  <p> As an lost adventurer you run around and <br>
 				pick up items to discover your endless potential </p>
-			  <button class="play_btn">Play</button><br>
+			  <button onclick="loadGame()" class="play_btn">Play</button><br>
 			</div>
 	      </div>
 	      
@@ -90,7 +132,7 @@
 			  <h1>Battle Snake</h1>
 			  <p> *came out before sliter.io* <br>
 				run around and take chunks off of the enemy</p>
-			  <button class="play_btn">Play</button><br>
+			  <button onclick="loadGame()" class="play_btn">Play</button><br>
 			</div>
 	      </div>
 	      
@@ -103,7 +145,7 @@
 			  <h1>Where's My Sheep</h1>
 			  <p> As a UFO we all know the mission <br>
 				<b>take the sheep!</b></p>
-			  <button class="play_btn">Play</button><br>
+			  <button onclick="loadGame()" class="play_btn">Play</button><br>
 			</div>
 	      </div>
 	      
@@ -116,7 +158,7 @@
 			  <h1>Migration</h1>
 			  <p> Lonely colorless ball <br>
 				with one goal: survive</p>
-			  <button class="play_btn">Play</button><br>
+			  <button onclick="loadGame()" class="play_btn">Play</button><br>
 			</div>
 	      </div>
 	      
@@ -129,7 +171,7 @@
 			  <h1>Mesh</h1>
 			  <p> Simple Little Math Game <br>
 				run around, collect numbers, reach goal</p>
-			  <button class="play_btn">Play</button><br>
+			  <button onclick="loadGame()" class="play_btn">Play</button><br>
 			</div>
 	      </div>
 	      
@@ -144,7 +186,7 @@
 			  <h1>Dungeon Invasion</h1>
 			  <p> Choose your character <br>
 				kill and collect points</p>
-			  <button class="play_btn">Play</button><br>
+			  <button onclick="loadGame()" class="play_btn">Play</button><br>
 			</div>
 	      </div>
 	      
@@ -157,7 +199,7 @@
 			  <h1>Circle Game</h1>
 			  <p> it's like agario <br>
 				just live~</p>
-			  <button class="play_btn">Play</button><br>
+			  <button onclick="loadGame()" class="play_btn">Play</button><br>
 			</div>
 	      </div>
 	      
@@ -170,7 +212,7 @@
 			  <h1>Tanks</h1>
 			  <p> Bounce your bullet off walls <br>
 				one shot is kill</p>
-			  <button class="play_btn">Play</button><br>
+			  <button onclick="loadGame()" class="play_btn">Play</button><br>
 			</div>
 	      </div>
 	      
@@ -178,4 +220,19 @@
 		</div>
 
 	</body>
+	<script>
+	  function loadGame() {
+	    document.getElementById("gameOverlay").style.display = "block";
+	    $('body').css({'overflow':'hidden'});
+		$(document).bind('scroll',function () { 
+		  window.scrollTo(0,0); 
+		});
+	  }
+	  
+	  function exit() {
+	    document.getElementById("gameOverlay").style.display = "none";
+	    $(document).unbind('scroll'); 
+        $('body').css({'overflow':'visible'});
+	  }  
+	</script>
 </html>
