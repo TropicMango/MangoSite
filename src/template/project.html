@@ -120,7 +120,7 @@
 			  <h1>Shields Up  *WIP*</h1>
 			  <p> As an lost adventurer you run around and <br>
 				pick up items to discover your endless potential </p>
-			  <button onclick="loadGame()" class="play_btn">Play</button><br>
+			  <button onclick="loadGame(0)" class="play_btn">Play</button><br>
 			</div>
 	      </div>
 	      
@@ -134,7 +134,7 @@
 			  <h1>Battle Snake</h1>
 			  <p> *came out before sliter.io* <br>
 				run around and take chunks off of the enemy</p>
-			  <button onclick="loadGame()" class="play_btn">Play</button><br>
+			  <button onclick="loadGame(1)" class="play_btn">Play</button><br>
 			</div>
 	      </div>
 	      
@@ -147,7 +147,7 @@
 			  <h1>Where's My Sheep</h1>
 			  <p> As a UFO we all know the mission <br>
 				<b>take the sheep!</b></p>
-			  <button onclick="loadGame()" class="play_btn">Play</button><br>
+			  <button onclick="loadGame(2)" class="play_btn">Play</button><br>
 			</div>
 	      </div>
 	      
@@ -160,7 +160,7 @@
 			  <h1>Migration</h1>
 			  <p> Lonely colorless ball <br>
 				with one goal: survive</p>
-			  <button onclick="loadGame()" class="play_btn">Play</button><br>
+			  <button onclick="loadGame(3)" class="play_btn">Play</button><br>
 			</div>
 	      </div>
 	      
@@ -173,7 +173,7 @@
 			  <h1>Mesh</h1>
 			  <p> Simple Little Math Game <br>
 				run around, collect numbers, reach goal</p>
-			  <button onclick="loadGame()" class="play_btn">Play</button><br>
+			  <button onclick="loadGame(4)" class="play_btn">Play</button><br>
 			</div>
 	      </div>
 	      
@@ -188,7 +188,7 @@
 			  <h1>Dungeon Invasion</h1>
 			  <p> Choose your character <br>
 				kill and collect points</p>
-			  <button onclick="loadGame()" class="play_btn">Play</button><br>
+			  <button onclick="loadGame(5)" class="play_btn">Play</button><br>
 			</div>
 	      </div>
 	      
@@ -201,7 +201,7 @@
 			  <h1>Circle Game</h1>
 			  <p> it's like agario <br>
 				just live~</p>
-			  <button onclick="loadGame()" class="play_btn">Play</button><br>
+			  <button onclick="loadGame(6)" class="play_btn">Play</button><br>
 			</div>
 	      </div>
 	      
@@ -214,11 +214,11 @@
 			  <h1>Tanks</h1>
 			  <p> Bounce your bullet off walls <br>
 				one shot is kill</p>
-			  <button onclick="loadGame()" class="play_btn">Play</button><br>
+			  <button onclick="loadGame(7)" class="play_btn">Play</button><br>
 			</div>
 	      </div>
 	      
-	      <a href="https://raw.githubusercontent.com/TropicMango/MangoSite/master/src/app/UFO_GAME.jar" download id="download" hidden></a>
+	      <a href="" download id="download" hidden></a>
 	      
 	      
 		</div>
@@ -232,42 +232,42 @@
 		  window.scrollTo(0,0); 
 		});
 		switch(gameID){
-		  case "Shields_Up":
+		  case 0:
 		    document.getElementById("game_title").innerHTML="Shields Up";
 			document.getElementById("game_discription").innerHTML="Sorry Currently Unavailable";
 			document.getElementById('download').href="";
 			break;
-		  case "Snake":
+		  case 1:
 			document.getElementById("game_title").innerHTML="Snake";
 			document.getElementById("game_discription").innerHTML="Multiple versions";
 			document.getElementById('download').href="https://raw.githubusercontent.com/TropicMango/MangoSite/master/src/app/BattleSnakes(PVP).jar";
 			break;
-		  case "Where's_My_Sheep":
+		  case 2:
 			document.getElementById("game_title").innerHTML="Where's_My_Sheep";
 			document.getElementById("game_discription").innerHTML="idrk where goes here";
 			document.getElementById('download').href="https://raw.githubusercontent.com/TropicMango/MangoSite/master/src/app/UFO_GAME.jar";
 			break;
-		  case "Migration":
+		  case 3:
 			document.getElementById("game_title").innerHTML="Migration";
 			document.getElementById("game_discription").innerHTML="idrk where goes here";
 			document.getElementById('download').href="https://raw.githubusercontent.com/TropicMango/MangoSite/master/src/app/migration.jar";
 			break;
-		  case "Mesh":
+		  case 4:
 			document.getElementById("game_title").innerHTML="Mesh";
 			document.getElementById("game_discription").innerHTML="idrk where goes here";
 			document.getElementById('download').href="https://raw.githubusercontent.com/TropicMango/MangoSite/master/src/app/Mesh.jar";
 			break;
-		  case "Dungeon":
+		  case 5:
 			document.getElementById("game_title").innerHTML="Dungeon";
 			document.getElementById("game_discription").innerHTML="idrk where goes here";
 			document.getElementById('download').href="https://raw.githubusercontent.com/TropicMango/MangoSite/master/src/app/Dungeon_Inv.jar";
 			break;
-		  case "Circle":
+		  case 6:
 			document.getElementById("game_title").innerHTML="Circle";
 			document.getElementById("game_discription").innerHTML="Sorry this doesn't work...";
 			document.getElementById('download').href="https://raw.githubusercontent.com/TropicMango/MangoSite/master/src/app/Circle_Game.jar";
 			break;
-		  case "Tank":
+		  case 7:
 			document.getElementById("game_title").innerHTML="Tank";
 			document.getElementById("game_discription").innerHTML="idrk where goes here";
 			document.getElementById('download').href="https://raw.githubusercontent.com/TropicMango/MangoSite/master/src/app/Tanks.jar";
