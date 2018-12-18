@@ -2,16 +2,6 @@
 <html>
 	<link rel="stylesheet" type="text/css" href="https://raw.githack.com/TropicMango/MangoSite/master/src/template/nav.css">
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-	<script src="https://www.java.com/js/deployJava.js"></script>
-    <script>
-        // using JavaScript to get location of JNLP
-        // file relative to HTML page
-        var dir = location.href.substring(0,
-            location.href.lastIndexOf('/')+1);
-        var url = dir + "dynamictree_webstart.jnlp";
-        deployJava.createWebStartLaunchButton(url, '1.7.0');
-    </script>
-    
     
 	<head>
 		<style>
@@ -78,7 +68,7 @@
 		    width: 90vw;
 		    height: 90vh;
 		    top: 8.5%;     left: 5%;
-		    background-color: rgba(192,192,192,1);
+		    background-color: rgba(40,40,40,1);
 		    z-index: 3;
 		    cursor: pointer;
 		    text-align: center;
@@ -103,8 +93,9 @@
 	<body>
 		<div id="gameOverlay" class="overlay">
 		 <div class="overlay_input">
-		   <a href="../app/UFO_webstart.jnlp">Launch Notepad Application</a>
-		   
+		   <h1 id="game_title">Title Here</h2>
+		   <div id="game_discription">Game Discription</div>
+		   <button onclick="download()" class="play_btn"> Download Game </button>
 		   <button onclick="exit()" class="overlay_exit_btn"><b>x</b></button><br>
 		 </div>
 	   </div>
@@ -227,17 +218,51 @@
 			</div>
 	      </div>
 	      
+	      <a href="https://raw.githubusercontent.com/TropicMango/MangoSite/master/src/app/UFO_GAME.jar" download id="download" hidden></a>
+	      
 	      
 		</div>
 
 	</body>
 	<script>
-	  function loadGame() {
+	  function loadGame(gameID) {
 	    document.getElementById("gameOverlay").style.display = "block";
 	    $('body').css({'overflow':'hidden'});
 		$(document).bind('scroll',function () { 
 		  window.scrollTo(0,0); 
 		});
+		switch(gameID){
+		  case "Shields_Up":
+		    document.getElementById("game_title").innerHTML="Shields Up";
+			document.getElementById("game_discription").innerHTML="";
+			document.getElementById('download').href="https://raw.githubusercontent.com/TropicMango/MangoSite/master/src/app/UFO_GAME.jar";
+			break;
+		  case "Snake":
+			document.getElementById("game_discription").innerHTML="herro";
+			break;
+		  case "Where's_My_Sheep":
+			document.getElementById("game_discription").innerHTML="herro";
+			break;
+		  case "Migration":
+			document.getElementById("game_discription").innerHTML="herro";
+			break;
+		  case "Mesh":
+			document.getElementById("game_discription").innerHTML="herro";
+			break;
+		  case "Dungeon":
+			document.getElementById("game_discription").innerHTML="herro";
+			break;
+		  case "Circle":
+			document.getElementById("game_discription").innerHTML="herro";
+			break;
+		  case "Tank":
+			document.getElementById("game_discription").innerHTML="herro";
+			break;
+		}
+	  }
+	  
+	  function download() {
+	    document.getElementById('download').click();
 	  }
 	  
 	  function exit() {
@@ -245,5 +270,6 @@
 	    $(document).unbind('scroll'); 
         $('body').css({'overflow':'visible'});
 	  }  
+	  
 	</script>
 </html>
