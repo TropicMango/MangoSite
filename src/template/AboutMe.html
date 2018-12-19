@@ -3,6 +3,7 @@
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 	<style>
 	    .main_img {
+	      margin-top: auto;
     	  width: 30vw;
       	  height: 30vh;
     	  overflow: hidden;
@@ -12,7 +13,7 @@
 		}
 		body {
 		  margin: 0px;
-		  background-color: #000;
+		  background-color: #111;
 		  color: white;
 		  
 		}
@@ -20,54 +21,67 @@
 		  text-align: left;
 		  font-size: 10vh;
 		}
-		
+		.banner {
+		  border: 2px solid #265728; 
+		  width: calc(100vw - 4px); 
+		  background-color: #000;
+		  height: 30vh;
+		}
 	</style>
 	<head>
 		<title>Tropic Mango</title>
 	</head>
 	<body>
-	    <div style="border:1px solid grey; width:100%">
-	      <ul>
-  		    <li><a href="/">Home</a></li>
-  		    <li><a href="/project">Projects</a></li>
-  		    <li><a href="/contact">Contact</a></li>
-  		    <li style="float:right"><a class="active" href="about">About</a></li>
-		  </ul>
+	    <ul>
+  		  <li><a href="/">Home</a></li>
+  		  <li><a href="/project">Projects</a></li>
+  		  <li><a href="/contact">Contact</a></li>
+  		  <li style="float:right"><a class="active" href="about">About</a></li>
+		</ul>
+	    <div class="banner">
 		  <img class="main_img" src="https://raw.githubusercontent.com/TropicMango/MangoSite/master/src/img/Mango.png">
-		  <p class="title">
-		  About
-		  ~Tropic Mango~<br> 
-		  Programmer & Developer<br>
-		  </p>
+		  <p style="font-size: 9vh; margin: 0vh; margin-top: 5vh;">About Tropic Mango</p>
+		  <p style="font-size: 4vh; margin: 0vh;">Programmer & Developer</p>
 		</div>
 		
-		<div style="margin-left: 5%; width: 90%; border: 1px solid grey; word-wrap: break-word;">
-		  <p id= "code_text"></p>
+		<div style="margin-left: 10%; width: 80%; border: 0px solid grey; word-wrap: break-word;">
+		  <p id= "code_text" style="font-size: 3vh; text-align:center;"></p>
 		</div>
 	</body>
 	<script>
 	  var timer = setInterval(load , 1); 
 	  var text = "";
-	  var i;
-	  var inc = 1;
+	  var about = [
+	  "My name is Charlie Wan, a student at UCSB studying computer science",
+	  "I am passionate about computer science with a dream of working at a VR firm",
+	  "This site contains my favorite programs and projects feel free to download them and try it out",
+	  "Honestly I have no idea what else goes here XD",
+	  "If you have suggestions please contact me~ (I'm lonely T^T)"
+	  ]
 	  
-	  function load(){
+	  function load() {
+	    var inc = 1;
+	    var i;
 	    for(i=0; i<10; i++){ text = Math.floor(Math.random()*2) + " " + text; }
 	    document.getElementById("code_text").innerHTML = text;
 	    
-	    if(inc > 500){ 
+	    if(inc > 300){ 
 	      clearTimeout(timer); 
 	      timer = setInterval(remove , 1); 
 	    }else{
 	      inc++;
 	    }
 	  }
-	  function remove(){
-	    text = text.slice(10);
+	  function remove() {
+	    text = text.slice(15);
 	    document.getElementById("code_text").innerHTML = text;
 	    if(text.length == 0){
 	      clearTimeout(timer); 
+	      timer = setInterval(print , 1); 
 	    }
+	  }
+	  function print() {
+	  
 	  }
 	</script>
 </html>
