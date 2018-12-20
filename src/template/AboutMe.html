@@ -58,14 +58,13 @@
 	  "Honestly I have no idea what else goes here XD",
 	  "If you have suggestions please contact me~ (I'm lonely T^T)"
 	  ]
-	  
+	  var inc = 1;
 	  function load() {
-	    var inc = 1;
 	    var i;
 	    for(i=0; i<10; i++){ text = Math.floor(Math.random()*2) + " " + text; }
 	    document.getElementById("code_text").innerHTML = text;
 	    
-	    if(inc > 300){ 
+	    if(inc > 3000){ 
 	      clearTimeout(timer); 
 	      timer = setInterval(remove , 1); 
 	    }else{
