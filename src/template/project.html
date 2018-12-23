@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html>
 	<link rel="stylesheet" type="text/css" href="https://raw.githack.com/TropicMango/MangoSite/master/src/template/nav.css">
-	<script type='text/javascript' src="https://raw.githack.com/TropicMango/MangoSite/master/src/script/infinity_craft.js"></script>
+	<!--<script type='text/javascript' src="https://raw.githack.com/TropicMango/MangoSite/master/src/script/infinity_craft.js"></script>-->
+	<script type='text/javascript' src="../script/infinity_craft.js"></script>
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     
 	<head>
@@ -94,10 +95,7 @@
 	<body>
 	   <div id="gameOverlay" class="overlay">
 		 <div class="overlay_input">
-		   <h1 id="game_title">Title Here</h2>
-		   <div id="game_discription">Game Discription</div>
-		   <div id="game_container" style="border: 1px solid white;"></div>
-		   <button onmousedown="accelerate(-0.2)" onmouseup="accelerate(0.05)">ACCELERATE</button>
+		   <div id="game_canvas"></div>
 		   <button onclick="exitGame()" class="overlay_exit_btn"><b>x</b></button><br>
 		 </div>
 	   </div>

@@ -2,6 +2,8 @@ var myGamePiece;
 var myObstacles = [];
 var myScore;
 
+// ----------------------------- Initialize --------------------------------
+
 function startGame() {
     myGamePiece = new component(30, 30, "red", 10, 120);
     myGamePiece.gravity = 0.05;
@@ -9,19 +11,39 @@ function startGame() {
     myGameArea.start();
 }
 
+// ----------------------------- Canvas --------------------------------
+
 var myGameArea = {
     canvas : document.createElement("canvas"),
     start : function() {
-        this.canvas.width = 480;
-        this.canvas.height = 270;
+        this.canvas.width = 980;
+        this.canvas.height = 540;
+        this.canvas.style.border = "1px solid white";
         this.context = this.canvas.getContext("2d");
-        document.getElementById("game_container").appendChild(this.canvas);
+        resize(this.canvas);
+        document.getElementById("game_canvas").appendChild(this.canvas);
         this.frameNo = 0;
         this.interval = setInterval(updateGameArea, 20);
         },
     clear : function() {
         this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
     }
+}
+
+function resize(canvas) {
+	var scale = {x: 1, y: 1};
+	scale.x = (85*window.innerWidth/100 - 10) / canvas.width;
+	scale.y = (90*window.innerHeight/100 - 10) / canvas.height;
+	
+	if (scale.x < 1 || scale.y < 1) {
+		scale = '1, 1';
+	} else if (scale.x < scale.y) {
+		scale = scale.x + ', ' + scale.x;
+	} else {
+		scale = scale.y + ', ' + scale.y;
+	}
+	
+	canvas.setAttribute('style', 'border: 1px solid white; -ms-transform-origin: center top; -webkit-transform-origin: center top; -moz-transform-origin: center top; -o-transform-origin: center top; transform-origin: center top; -ms-transform: scale(' + scale + '); -webkit-transform: scale3d(' + scale + ', 1); -moz-transform: scale(' + scale + '); -o-transform: scale(' + scale + '); transform: scale(' + scale + ');');
 }
 
 function component(width, height, color, x, y, type) {
@@ -114,3 +136,19 @@ function everyinterval(n) {
 function accelerate(n) {
     myGamePiece.gravity = n;
 }
+
+// ----------------------------- Listener --------------------------------
+
+window.onkeydown = function (e) {
+  var code = e.keyCode ? e.keyCode : e.which;
+  if (code === 87) {
+    accelerate(-0.5);
+  }
+};
+
+window.onkeyup = function (e) {
+  var code = e.keyCode ? e.keyCode : e.which;
+  if (event.which == 87) {
+    accelerate(0.2);
+  }
+};
