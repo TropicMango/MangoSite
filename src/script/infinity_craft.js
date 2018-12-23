@@ -1,14 +1,32 @@
 var myGamePiece;
-var myObstacles = [];
+var grid;
 var myScore;
+var prevPos;
+var newPos;
+
+var i, j, k;
 
 // ----------------------------- Initialize --------------------------------
 
 function startGame() {
-    myGamePiece = new component(30, 30, "red", 10, 120);
-    myGamePiece.gravity = 0.05;
-    myScore = new component("30px", "Consolas", "black", 280, 40, "text");
+    initiateGrid();
     myGameArea.start();
+    gameStart();
+}
+
+function initiateGrid() {
+	var tileSize = 50;
+	var gridSize = 10;
+    grid = new Array(gridSize);
+    for (i=0; i<grid.length; i++) {
+    	grid[i] = new Array(gridSize);
+    	for (var j=0; j<grid[0].length; j++) {
+    		grid[i][j] = new tile(tileSize, i, j, "#D3D3D3");
+    	}
+	}
+	prevPos = [0,0];
+	newPos = [0,0];
+
 }
 
 // ----------------------------- Canvas --------------------------------
@@ -16,12 +34,12 @@ function startGame() {
 var myGameArea = {
     canvas : document.createElement("canvas"),
     start : function() {
-        this.canvas.width = 980;
-        this.canvas.height = 540;
+        this.canvas.width = 1000;
+        this.canvas.height = 550;
         this.canvas.style.border = "1px solid white";
         this.context = this.canvas.getContext("2d");
-        resize(this.canvas);
-        document.getElementById("game_canvas").appendChild(this.canvas);
+        //resize(this.canvas);
+        $("#game_canvas").append(this.canvas);
         this.frameNo = 0;
         this.interval = setInterval(updateGameArea, 20);
         },
@@ -46,86 +64,31 @@ function resize(canvas) {
 	canvas.setAttribute('style', 'border: 1px solid white; -ms-transform-origin: center top; -webkit-transform-origin: center top; -moz-transform-origin: center top; -o-transform-origin: center top; transform-origin: center top; -ms-transform: scale(' + scale + '); -webkit-transform: scale3d(' + scale + ', 1); -moz-transform: scale(' + scale + '); -o-transform: scale(' + scale + '); transform: scale(' + scale + ');');
 }
 
-function component(width, height, color, x, y, type) {
-    this.type = type;
-    this.score = 0;
-    this.width = width;
-    this.height = height;
-    this.speedX = 0;
-    this.speedY = 0;    
-    this.x = x;
-    this.y = y;
-    this.gravity = 0;
-    this.gravitySpeed = 0;
-    this.update = function() {
+function tile(size, x, y, color) { // ctx = myGameArea.context; paint shit
+  this.x = x * size + 1;
+  this.y = y * size + 1;
+  this.size = size - 2;
+  this.color = color;
+  
+  this.update = function() {
         ctx = myGameArea.context;
-        if (this.type == "text") {
-            ctx.font = this.width + " " + this.height;
-            ctx.fillStyle = color;
-            ctx.fillText(this.text, this.x, this.y);
-        } else {
-            ctx.fillStyle = color;
-            ctx.fillRect(this.x, this.y, this.width, this.height);
-        }
-    }
-    this.newPos = function() {
-        this.gravitySpeed += this.gravity;
-        this.x += this.speedX;
-        this.y += this.speedY + this.gravitySpeed;
-        this.hitBottom();
-    }
-    this.hitBottom = function() {
-        var rockbottom = myGameArea.canvas.height - this.height;
-        if (this.y > rockbottom) {
-            this.y = rockbottom;
-            this.gravitySpeed = 0;
-        }
-    }
-    this.crashWith = function(otherobj) {
-        var myleft = this.x;
-        var myright = this.x + (this.width);
-        var mytop = this.y;
-        var mybottom = this.y + (this.height);
-        var otherleft = otherobj.x;
-        var otherright = otherobj.x + (otherobj.width);
-        var othertop = otherobj.y;
-        var otherbottom = otherobj.y + (otherobj.height);
-        var crash = true;
-        if ((mybottom < othertop) || (mytop > otherbottom) || (myright < otherleft) || (myleft > otherright)) {
-            crash = false;
-        }
-        return crash;
+        ctx.fillStyle = color;
+        ctx.fillRect(this.x, this.y, this.size, this.size);
     }
 }
 
 function updateGameArea() {
-    var x, height, gap, minHeight, maxHeight, minGap, maxGap;
-    for (i = 0; i < myObstacles.length; i += 1) {
-        if (myGamePiece.crashWith(myObstacles[i])) {
-            return;
-        } 
-    }
     myGameArea.clear();
     myGameArea.frameNo += 1;
-    if (myGameArea.frameNo == 1 || everyinterval(150)) {
-        x = myGameArea.canvas.width;
-        minHeight = 20;
-        maxHeight = 200;
-        height = Math.floor(Math.random()*(maxHeight-minHeight+1)+minHeight);
-        minGap = 50;
-        maxGap = 200;
-        gap = Math.floor(Math.random()*(maxGap-minGap+1)+minGap);
-        myObstacles.push(new component(10, height, "green", x, 0));
-        myObstacles.push(new component(10, x - height - gap, "green", x, height + gap));
+    
+    for (i = 0; i < grid.length; i++) {
+		for (j = 0; j < grid[0].length; j++) {
+        	grid[i][j].x += newPos[0] - prevPos[0];
+        	grid[i][j].y += newPos[1] - prevPos[1];
+        	grid[i][j].update();
+        }
     }
-    for (i = 0; i < myObstacles.length; i += 1) {
-        myObstacles[i].x += -1;
-        myObstacles[i].update();
-    }
-    myScore.text="SCORE: " + myGameArea.frameNo;
-    myScore.update();
-    myGamePiece.newPos();
-    myGamePiece.update();
+    prevPos = newPos;
 }
 
 function everyinterval(n) {
@@ -133,22 +96,22 @@ function everyinterval(n) {
     return false;
 }
 
-function accelerate(n) {
-    myGamePiece.gravity = n;
-}
 
 // ----------------------------- Listener --------------------------------
-
-window.onkeydown = function (e) {
-  var code = e.keyCode ? e.keyCode : e.which;
-  if (code === 87) {
-    accelerate(-0.5);
-  }
-};
-
-window.onkeyup = function (e) {
-  var code = e.keyCode ? e.keyCode : e.which;
-  if (event.which == 87) {
-    accelerate(0.2);
-  }
-};
+function gameStart() {
+  var $gameArea = $("#game_canvas");
+  $gameArea.on('mousedown', function (evt) {
+  prevPos = [evt.clientX, evt.clientY];
+  newPos = [evt.clientX, evt.clientY];
+  $gameArea.on('mouseup mousemove', function handler(evt) {
+    if (evt.type === 'mouseup') {
+      console.log("mouse up");
+      $gameArea.off('mouseup mousemove', handler);
+    } else {
+      newPos = [evt.clientX, evt.clientY];
+      console.log("x:" + newPos[0] + ", y:" + newPos[1]);
+    }
+  });
+  });
+}
+/**/
