@@ -96,7 +96,7 @@
 		 <div class="overlay_input">
 		   <h1 id="game_title">Title Here</h2>
 		   <div id="game_discription">Game Discription</div>
-		   <div onload="startGame()"></div>
+		   <div id="game_container" style="border: 1px solid white;"></div>
 		   <button onmousedown="accelerate(-0.2)" onmouseup="accelerate(0.05)">ACCELERATE</button>
 		   <button onclick="exitGame()" class="overlay_exit_btn"><b>x</b></button><br>
 		 </div>
@@ -144,7 +144,7 @@
 			  <h1>Infinity Craft  *WIP*</h1>
 			  <p> build shit <br>
 				still WIP </p>
-			  <button onclick="loadDownload(0)" class="play_btn">Play</button><br>
+			  <button onclick="loadGame(0)" class="play_btn">Play</button><br>
 			</div>
 	      </div>
 	      
@@ -307,6 +307,7 @@
 		$(document).bind('scroll',function () { 
 		  window.scrollTo(0,0); 
 		});
+		startGame();
 	  }
 	  
 	  function download() {
