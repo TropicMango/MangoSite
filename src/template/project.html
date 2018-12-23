@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 	<link rel="stylesheet" type="text/css" href="https://raw.githack.com/TropicMango/MangoSite/master/src/template/nav.css">
+	<script type='text/javascript' src="https://raw.githack.com/TropicMango/MangoSite/master/src/script/infinity_craft.js"></script>
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     
 	<head>
@@ -91,12 +92,22 @@
 	</style>
 	</head>
 	<body>
-		<div id="gameOverlay" class="overlay">
+	   <div id="gameOverlay" class="overlay">
 		 <div class="overlay_input">
 		   <h1 id="game_title">Title Here</h2>
 		   <div id="game_discription">Game Discription</div>
+		   <div onload="startGame()"></div>
+		   <button onmousedown="accelerate(-0.2)" onmouseup="accelerate(0.05)">ACCELERATE</button>
+		   <button onclick="exitGame()" class="overlay_exit_btn"><b>x</b></button><br>
+		 </div>
+	   </div>
+	
+	   <div id="downloadOverlay" class="overlay">
+		 <div class="overlay_input">
+		   <h1 id="download_title">Title Here</h2>
+		   <div id="download_discription">Game Discription</div>
 		   <button onclick="download()" class="play_btn"> Download Game </button>
-		   <button onclick="exit()" class="overlay_exit_btn"><b>x</b></button><br>
+		   <button onclick="exitLoad()" class="overlay_exit_btn"><b>x</b></button><br>
 		 </div>
 	   </div>
 	
@@ -120,7 +131,20 @@
 			  <h1>Shields Up  *WIP*</h1>
 			  <p> As an lost adventurer you run around and <br>
 				pick up items to discover your endless potential </p>
-			  <button onclick="loadGame(0)" class="play_btn">Play</button><br>
+			  <button onclick="loadDownload(0)" class="play_btn">Play</button><br>
+			</div>
+	      </div>
+	      
+	      <!-- Infinity Craft -->
+	      <div>
+			<div style="float:left; width: 60%">
+			  <img class="card_img" src="https://raw.githubusercontent.com/TropicMango/MangoSite/master/src/img/Shields_Up.png">
+			</div>
+			<div class="info">
+			  <h1>Infinity Craft  *WIP*</h1>
+			  <p> build shit <br>
+				still WIP </p>
+			  <button onclick="loadDownload(0)" class="play_btn">Play</button><br>
 			</div>
 	      </div>
 	      
@@ -134,7 +158,7 @@
 			  <h1>Battle Snake</h1>
 			  <p> *came out before sliter.io* <br>
 				run around and take chunks off of the enemy</p>
-			  <button onclick="loadGame(1)" class="play_btn">Play</button><br>
+			  <button onclick="loadDownload(1)" class="play_btn">Play</button><br>
 			</div>
 	      </div>
 	      
@@ -147,7 +171,7 @@
 			  <h1>Where's My Sheep</h1>
 			  <p> As a UFO we all know the mission <br>
 				<b>take the sheep!</b></p>
-			  <button onclick="loadGame(2)" class="play_btn">Play</button><br>
+			  <button onclick="loadDownload(2)" class="play_btn">Play</button><br>
 			</div>
 	      </div>
 	      
@@ -160,7 +184,7 @@
 			  <h1>Migration</h1>
 			  <p> Lonely colorless ball <br>
 				with one goal: survive</p>
-			  <button onclick="loadGame(3)" class="play_btn">Play</button><br>
+			  <button onclick="loadDownload(3)" class="play_btn">Play</button><br>
 			</div>
 	      </div>
 	      
@@ -173,7 +197,7 @@
 			  <h1>Mesh</h1>
 			  <p> Simple Little Math Game <br>
 				run around, collect numbers, reach goal</p>
-			  <button onclick="loadGame(4)" class="play_btn">Play</button><br>
+			  <button onclick="loadDownload(4)" class="play_btn">Play</button><br>
 			</div>
 	      </div>
 	      
@@ -188,7 +212,7 @@
 			  <h1>Dungeon Invasion</h1>
 			  <p> Choose your character <br>
 				kill and collect points</p>
-			  <button onclick="loadGame(5)" class="play_btn">Play</button><br>
+			  <button onclick="loadDownload(5)" class="play_btn">Play</button><br>
 			</div>
 	      </div>
 	      
@@ -201,7 +225,7 @@
 			  <h1>Circle Game</h1>
 			  <p> it's like agario <br>
 				just live~</p>
-			  <button onclick="loadGame(6)" class="play_btn">Play</button><br>
+			  <button onclick="loadDownload(6)" class="play_btn">Play</button><br>
 			</div>
 	      </div>
 	      
@@ -214,7 +238,7 @@
 			  <h1>Tanks</h1>
 			  <p> Bounce your bullet off walls <br>
 				one shot is kill</p>
-			  <button onclick="loadGame(7)" class="play_btn">Play</button><br>
+			  <button onclick="loadDownload(7)" class="play_btn">Play</button><br>
 			</div>
 	      </div>
 	      
@@ -225,61 +249,77 @@
 
 	</body>
 	<script>
-	  function loadGame(gameID) {
-	    document.getElementById("gameOverlay").style.display = "block";
+	  function loadDownload(gameID) {
+	    document.getElementById("downloadOverlay").style.display = "block";
 	    $('body').css({'overflow':'hidden'});
 		$(document).bind('scroll',function () { 
 		  window.scrollTo(0,0); 
 		});
 		switch(gameID){
 		  case 0:
-		    document.getElementById("game_title").innerHTML="Shields Up";
-			document.getElementById("game_discription").innerHTML="Sorry Currently Unavailable";
+		    document.getElementById("download_title").innerHTML="Shields Up";
+			document.getElementById("download_discription").innerHTML="Sorry Currently Unavailable";
 			document.getElementById('download').href="";
 			break;
 		  case 1:
-			document.getElementById("game_title").innerHTML="Snake";
-			document.getElementById("game_discription").innerHTML="Multiple versions";
+			document.getElementById("download_title").innerHTML="Snake";
+			document.getElementById("download_discription").innerHTML="idrk where goes here";
 			document.getElementById('download').href="https://raw.githubusercontent.com/TropicMango/MangoSite/master/src/app/BattleSnakes(PVP).jar";
 			break;
 		  case 2:
-			document.getElementById("game_title").innerHTML="Where's_My_Sheep";
-			document.getElementById("game_discription").innerHTML="idrk where goes here";
+			document.getElementById("download_title").innerHTML="Where's_My_Sheep";
+			document.getElementById("download_discription").innerHTML="idrk where goes here";
 			document.getElementById('download').href="https://raw.githubusercontent.com/TropicMango/MangoSite/master/src/app/UFO_GAME.jar";
 			break;
 		  case 3:
-			document.getElementById("game_title").innerHTML="Migration";
-			document.getElementById("game_discription").innerHTML="idrk where goes here";
+			document.getElementById("download_title").innerHTML="Migration";
+			document.getElementById("download_discription").innerHTML="idrk where goes here";
 			document.getElementById('download').href="https://raw.githubusercontent.com/TropicMango/MangoSite/master/src/app/migration.jar";
 			break;
 		  case 4:
-			document.getElementById("game_title").innerHTML="Mesh";
-			document.getElementById("game_discription").innerHTML="idrk where goes here";
+			document.getElementById("download_title").innerHTML="Mesh";
+			document.getElementById("download_discription").innerHTML="idrk where goes here";
 			document.getElementById('download').href="https://raw.githubusercontent.com/TropicMango/MangoSite/master/src/app/Mesh.jar";
 			break;
 		  case 5:
-			document.getElementById("game_title").innerHTML="Dungeon";
-			document.getElementById("game_discription").innerHTML="idrk where goes here";
+			document.getElementById("download_title").innerHTML="Dungeon";
+			document.getElementById("download_discription").innerHTML="idrk where goes here";
 			document.getElementById('download').href="https://raw.githubusercontent.com/TropicMango/MangoSite/master/src/app/Dungeon_Inv.jar";
 			break;
 		  case 6:
-			document.getElementById("game_title").innerHTML="Circle";
-			document.getElementById("game_discription").innerHTML="Sorry this doesn't work...";
+			document.getElementById("download_title").innerHTML="Circle";
+			document.getElementById("download_discription").innerHTML="idrk where goes here";
 			document.getElementById('download').href="https://raw.githubusercontent.com/TropicMango/MangoSite/master/src/app/Circle_Game.jar";
 			break;
 		  case 7:
-			document.getElementById("game_title").innerHTML="Tank";
-			document.getElementById("game_discription").innerHTML="idrk where goes here";
+			document.getElementById("download_title").innerHTML="Tank";
+			document.getElementById("download_discription").innerHTML="idrk where goes here";
 			document.getElementById('download').href="https://raw.githubusercontent.com/TropicMango/MangoSite/master/src/app/Tanks.jar";
 			break;
+		  case 8:
+		  
 		}
+	  }
+	  
+	  function loadGame(gameID) {
+	    document.getElementById("gameOverlay").style.display = "block";
+	    $('body').css({'overflow':'hidden'});
+		$(document).bind('scroll',function () { 
+		  window.scrollTo(0,0); 
+		});
 	  }
 	  
 	  function download() {
 	    document.getElementById('download').click();
 	  }
 	  
-	  function exit() {
+	  function exitLoad() {
+	    document.getElementById("downloadOverlay").style.display = "none";
+	    $(document).unbind('scroll'); 
+        $('body').css({'overflow':'visible'});
+	  }  
+	  
+	  function exitGame() {
 	    document.getElementById("gameOverlay").style.display = "none";
 	    $(document).unbind('scroll'); 
         $('body').css({'overflow':'visible'});
