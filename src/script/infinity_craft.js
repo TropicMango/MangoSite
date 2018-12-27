@@ -1,8 +1,9 @@
 var myGamePiece;
 var grid;
 var myScore;
-var prevPos;
-var newPos;
+var prevPos, newPos, offPos;
+
+var shifted = false;
 
 var i, j, k;
 
@@ -21,12 +22,12 @@ function initiateGrid() {
     for (i=0; i<grid.length; i++) {
     	grid[i] = new Array(gridSize);
     	for (var j=0; j<grid[0].length; j++) {
-    		grid[i][j] = new tile(tileSize, i, j, "#D3D3D3");
+    		grid[i][j] = new tile(tileSize, i, j, 0);
     	}
 	}
 	prevPos = [0,0];
 	newPos = [0,0];
-
+	offPos = [0,0];
 }
 
 // ----------------------------- Canvas --------------------------------
@@ -34,12 +35,12 @@ function initiateGrid() {
 var myGameArea = {
     canvas : document.createElement("canvas"),
     start : function() {
-        this.canvas.width = 1000;
-        this.canvas.height = 550;
+    	var FC = $("#factory_canvas");
+        this.canvas.width = FC.width();
+        this.canvas.height = FC.height();
         this.canvas.style.border = "1px solid white";
         this.context = this.canvas.getContext("2d");
-        //resize(this.canvas);
-        $("#game_canvas").append(this.canvas);
+        FC.append(this.canvas);
         this.frameNo = 0;
         this.interval = setInterval(updateGameArea, 20);
         },
@@ -50,8 +51,8 @@ var myGameArea = {
 
 function resize(canvas) {
 	var scale = {x: 1, y: 1};
-	scale.x = (85*window.innerWidth/100 - 10) / canvas.width;
-	scale.y = (90*window.innerHeight/100 - 10) / canvas.height;
+	scale.x = (window.innerWidth - 3) / canvas.width;
+	scale.y = (window.innerHeight - 3) / canvas.height;
 	
 	if (scale.x < 1 || scale.y < 1) {
 		scale = '1, 1';
@@ -60,35 +61,68 @@ function resize(canvas) {
 	} else {
 		scale = scale.y + ', ' + scale.y;
 	}
-	
-	canvas.setAttribute('style', 'border: 1px solid white; -ms-transform-origin: center top; -webkit-transform-origin: center top; -moz-transform-origin: center top; -o-transform-origin: center top; transform-origin: center top; -ms-transform: scale(' + scale + '); -webkit-transform: scale3d(' + scale + ', 1); -moz-transform: scale(' + scale + '); -o-transform: scale(' + scale + '); transform: scale(' + scale + ');');
+	canvas.setAttribute('style', 'border: 1px solid white;');
+	//canvas.setAttribute('style', 'border: 1px solid black; -ms-transform-origin: center top; -webkit-transform-origin: center top; -moz-transform-origin: center top; -o-transform-origin: center top; transform-origin: center top; -ms-transform: scale(' + scale + '); -webkit-transform: scale3d(' + scale + ', 1); -moz-transform: scale(' + scale + '); -o-transform: scale(' + scale + '); transform: scale(' + scale + ');');
 }
 
-function tile(size, x, y, color) { // ctx = myGameArea.context; paint shit
+function tile(size, x, y, type, direction) { // ctx = myGameArea.context; paint shit
   this.x = x * size + 1;
   this.y = y * size + 1;
   this.size = size - 2;
-  this.color = color;
+  this.type = type;
+  this.direction = direction;
   
   this.update = function() {
-        ctx = myGameArea.context;
-        ctx.fillStyle = color;
-        ctx.fillRect(this.x, this.y, this.size, this.size);
+    ctx = myGameArea.context;
+    ctx.fillStyle = "#D3D3D3";
+    ctx.fillRect(this.x, this.y, this.size, this.size);
+    
+    if(type==0){ return; }
+    ctx.fillStyle = "red";
+    switch(direction) {
+      case 0: //up
+        ctx.fillRect(this.x+2, this.y, this.size-4, 3);
+        break;
+      case 1: //down
+        ctx.fillRect(this.x+2, this.y + this.size - 3, this.size-4, 3);
+      	break;
+      case 2: //left
+        ctx.fillRect(this.x, this.y+2, 3, this.size-4);
+        break;
+      case 3: //right
+        ctx.fillRect(this.x + this.size - 3, this.y+2, 3, this.size-4);
+      	break;
     }
+  }
 }
 
 function updateGameArea() {
     myGameArea.clear();
     myGameArea.frameNo += 1;
     
-    for (i = 0; i < grid.length; i++) {
+    (shifted) ? shiftGrid() : updateGrid();
+    
+}
+
+function updateGrid() {
+	for (i = 0; i < grid.length; i++) {
+		for (j = 0; j < grid[0].length; j++) {
+			grid[i][j].update();
+		}
+	}
+}
+
+function shiftGrid() {
+	for (i = 0; i < grid.length; i++) {
 		for (j = 0; j < grid[0].length; j++) {
         	grid[i][j].x += newPos[0] - prevPos[0];
         	grid[i][j].y += newPos[1] - prevPos[1];
         	grid[i][j].update();
         }
     }
+    offPos = [offPos[0] - (newPos[0] - prevPos[0]), offPos[1] - (newPos[1] - prevPos[1])];
     prevPos = newPos;
+    //console.log("offpos: "+offPos+" newPos: "+newPos);
 }
 
 function everyinterval(n) {
@@ -96,20 +130,33 @@ function everyinterval(n) {
     return false;
 }
 
+function resetCamera() {
+	prevPos = [0,0];
+	newPos = offPos;
+	shiftGrid();
+	offPos = [0,0];
+}
+
+function addUnit() {
+	grid[0][0].type = 1;
+	grid[0][0].direction = 1;
+}
 
 // ----------------------------- Listener --------------------------------
 function gameStart() {
-  var $gameArea = $("#game_canvas");
+  var $gameArea = $("#factory_canvas");
   $gameArea.on('mousedown', function (evt) {
   prevPos = [evt.clientX, evt.clientY];
   newPos = [evt.clientX, evt.clientY];
   $gameArea.on('mouseup mousemove', function handler(evt) {
     if (evt.type === 'mouseup') {
-      console.log("mouse up");
+      //console.log("mouse up");
       $gameArea.off('mouseup mousemove', handler);
     } else {
       newPos = [evt.clientX, evt.clientY];
-      console.log("x:" + newPos[0] + ", y:" + newPos[1]);
+      shifted = true;
+      //shiftGrid();
+      //console.log("x:" + newPos[0] + ", y:" + newPos[1]);
     }
   });
   });
