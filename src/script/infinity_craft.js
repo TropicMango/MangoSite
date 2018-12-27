@@ -1,7 +1,13 @@
 var myGamePiece;
-var grid;
-var myScore;
+var grid, materials;
 var prevPos, newPos, offPos;
+
+var selectTile, selectedCord;
+
+var tileSize = 50;
+var gridSize = 10;
+var mineSpeed = 200;
+var beltSpeed = 1;
 
 var shifted = false;
 
@@ -16,8 +22,7 @@ function startGame() {
 }
 
 function initiateGrid() {
-	var tileSize = 50;
-	var gridSize = 10;
+	
     grid = new Array(gridSize);
     for (i=0; i<grid.length; i++) {
     	grid[i] = new Array(gridSize);
@@ -28,6 +33,8 @@ function initiateGrid() {
 	prevPos = [0,0];
 	newPos = [0,0];
 	offPos = [0,0];
+	materials = [];
+	selectTile = new tile(tileSize, 11, 11, 0, 0, "#00000000");
 }
 
 // ----------------------------- Canvas --------------------------------
@@ -65,42 +72,180 @@ function resize(canvas) {
 	//canvas.setAttribute('style', 'border: 1px solid black; -ms-transform-origin: center top; -webkit-transform-origin: center top; -moz-transform-origin: center top; -o-transform-origin: center top; transform-origin: center top; -ms-transform: scale(' + scale + '); -webkit-transform: scale3d(' + scale + ', 1); -moz-transform: scale(' + scale + '); -o-transform: scale(' + scale + '); transform: scale(' + scale + ');');
 }
 
-function tile(size, x, y, type, direction) { // ctx = myGameArea.context; paint shit
+function tile(size, x, y, type, direction, color = "#D3D3D3") { // ctx = myGameArea.context; paint shit
   this.x = x * size + 1;
   this.y = y * size + 1;
   this.size = size - 2;
   this.type = type;
   this.direction = direction;
+  this.color = color;
+  
+  this.cell = [x, y];
   
   this.update = function() {
-    ctx = myGameArea.context;
-    ctx.fillStyle = "#D3D3D3";
-    ctx.fillRect(this.x, this.y, this.size, this.size);
-    
-    if(this.type==0){ return; }
-    ctx.fillStyle = "red";
-    switch(this.direction) {
-      case 0: //up
-        ctx.fillRect(this.x+2, this.y, this.size-4, 3);
-        break;
-      case 1: //down
-        ctx.fillRect(this.x+2, this.y + this.size - 3, this.size-4, 3);
-      	break;
-      case 2: //left
-        ctx.fillRect(this.x, this.y+2, 3, this.size-4);
-        break;
-      case 3: //right
-        ctx.fillRect(this.x + this.size - 3, this.y+2, 3, this.size-4);
-      	break;
-    }
+  	this.x += newPos[0] - prevPos[0];
+  	this.y += newPos[1] - prevPos[1];
+    switch(this.type) {
+  	  case 0:
+  	  	blank(this);
+    	break;
+    	
+  	  case 1: 
+  	    miner(this);
+  	    break;
+  	    
+  	  case 2: 
+  	    belt(this);
+  	    break;
+  	    
+  	  case 3: 
+  	    sell(this);
+  	    break;
+  	}  
   }
 }
+
+function blank(unit) { // ------------------ Blank ------------------
+	ctx = myGameArea.context;
+    ctx.fillStyle = unit.color;
+	ctx.fillRect(unit.x, unit.y, unit.size, unit.size);
+}
+
+function miner(unit) { // ------------------ Mine ------------------
+	ctx = myGameArea.context;
+    ctx.fillStyle = '#ffb7d3';
+	ctx.fillRect(unit.x, unit.y, unit.size, unit.size);
+	ctx.fillStyle = "red";
+	switch(unit.direction % 4) {
+	  case 0: //up
+		ctx.fillRect(unit.x+4, unit.y, unit.size-8, 7);
+		break;
+	  case 2: //down
+		ctx.fillRect(unit.x+4, unit.y + unit.size - 8, unit.size-4, 7);
+		break;
+	  case 3: //left
+		ctx.fillRect(unit.x, unit.y+4, 7, unit.size-8);
+		break;
+	  case 1: //right
+		ctx.fillRect(unit.x + unit.size - 7, unit.y+4, 7, unit.size-8);
+		break;
+	}
+	
+	if(everyinterval(150)){
+	    materials.push(new item(unit.x, unit.y, unit.cell, 0));
+	}
+}
+
+function belt(unit) { // ------------------ Belt ------------------
+	ctx = myGameArea.context;
+    ctx.fillStyle = '#b7d3ff';
+	ctx.fillRect(unit.x, unit.y, unit.size, unit.size);
+	ctx.fillStyle = "blue";
+	switch(unit.direction % 4) {
+	  case 0: //up
+		ctx.fillRect(unit.x+4, unit.y, unit.size-8, 7);
+		break;
+	  case 2: //down
+		ctx.fillRect(unit.x+4, unit.y + unit.size - 8, unit.size-8, 7);
+		break;
+	  case 3: //left
+		ctx.fillRect(unit.x, unit.y+4, 7, unit.size-8);
+		break;
+	  case 1: //right
+		ctx.fillRect(unit.x + unit.size - 7, unit.y+4, 7, unit.size-8);
+		break;
+	}
+}
+
+function sell(unit) { // ------------------ sell ------------------
+	ctx = myGameArea.context;
+    ctx.fillStyle = '#b7ffd3';
+	ctx.fillRect(unit.x, unit.y, unit.size, unit.size);
+	ctx.fillStyle = "green";
+	switch(unit.direction % 4) {
+	  case 0: //up
+		ctx.fillRect(unit.x+4, unit.y, unit.size-8, 7);
+		break;
+	  case 2: //down
+		ctx.fillRect(unit.x+4, unit.y + unit.size - 8, unit.size-8, 7);
+		break;
+	  case 3: //left
+		ctx.fillRect(unit.x, unit.y+4, 7, unit.size-8);
+		break;
+	  case 1: //right
+		ctx.fillRect(unit.x + unit.size - 7, unit.y+4, 7, unit.size-8);
+		break;
+	}
+}
+
+function item(x, y, cell, type) {
+	this.x = x;
+	this.y = y;
+	this.cell = [cell[0], cell[1]];
+	console.log("summon cell: " + this.cell);
+	this.type = type;
+	
+	this.distance = 0;
+	
+	this.update = function() {
+		ctx = myGameArea.context;
+   		ctx.fillStyle = 'white';
+		ctx.fillRect(this.x+10, this.y+10, 30, 30);
+		
+		var hoverUnit = grid[this.cell[0]][this.cell[1]];
+		
+		console.log("this cell: " + grid[this.cell[0]][this.cell[1]]);
+		
+		switch(hoverUnit.direction % 4){
+		  case 0: //up
+			this.y--;
+			break;
+		  case 2: //down
+			this.y++;
+			break;
+		  case 3: //left
+			this.x--;
+			break;
+		  case 1: //right
+			this.x++;
+			break;
+		}
+		
+		this.distance++;
+		
+		if(this.distance >= tileSize){
+		  if(hoverUnit.type == 3) { return sellItem(this); }
+		  switch(hoverUnit.direction % 4){
+			  case 0: //up
+				this.cell[1]--;
+				break;
+			  case 2: //down
+				this.cell[1]++;
+				break;
+			  case 3: //left
+				this.cell[0]--;
+				break;
+			  case 1: //right
+				this.cell[0]++;
+				break;
+			}
+			this.distance=0;
+		}
+	}
+}
+
+function sellItem(item) {
+	materials.find(item);
+}
+
+// ---------------------------------- Unit Update --------------------------------
 
 function updateGameArea() {
     myGameArea.clear();
     myGameArea.frameNo += 1;
     
-    (shifted) ? shiftGrid() : updateGrid();
+    //(shifted) ? shiftGrid() : updateGrid();
+    updateGrid();
     
 }
 
@@ -110,20 +255,38 @@ function updateGrid() {
 			grid[i][j].update();
 		}
 	}
+	selectTile.update();
+	
+	for (i = 0; i < materials.length; i++) {
+		materials[i].update();
+	}
+	
+	offPos = [offPos[0] + (newPos[0] - prevPos[0]), offPos[1] + (newPos[1] - prevPos[1])];
+    prevPos = newPos;
+}
+
+/*function shiftUnit(selectedUnit) {
+  selectedUnit.x += newPos[0] - prevPos[0];
+  selectedUnit.y += newPos[1] - prevPos[1];
 }
 
 function shiftGrid() {
 	for (i = 0; i < grid.length; i++) {
 		for (j = 0; j < grid[0].length; j++) {
-        	grid[i][j].x += newPos[0] - prevPos[0];
-        	grid[i][j].y += newPos[1] - prevPos[1];
-        	grid[i][j].update();
+        	shiftUnit(grid[i][j]);
         }
     }
-    offPos = [offPos[0] - (newPos[0] - prevPos[0]), offPos[1] - (newPos[1] - prevPos[1])];
+    
+    shiftUnit(selectTile);
+    
+    offPos = [offPos[0] + (newPos[0] - prevPos[0]), offPos[1] + (newPos[1] - prevPos[1])];
     prevPos = newPos;
     //console.log("offpos: "+offPos+" newPos: "+newPos);
-}
+    
+    updateGrid();
+}*/
+
+// ------------------------- Unit modification -----------------------
 
 function everyinterval(n) {
     if ((myGameArea.frameNo / n) % 1 == 0) {return true;}
@@ -131,22 +294,36 @@ function everyinterval(n) {
 }
 
 function resetCamera() {
-	prevPos = [0,0];
-	newPos = offPos;
+	prevPos = offPos;
+	newPos = [0,0];
 	shiftGrid();
 	offPos = [0,0];
 }
 
-function addUnit() {
-	console.log(grid[0][0]);
-	grid[0][0].type = 1;
-	grid[0][0].direction = 2;
-	console.log(grid[0][0]);
+function setUnit(unitID) {
+	grid[selectedCord[0]][selectedCord[1]].type = unitID;
+	grid[selectedCord[0]][selectedCord[1]].direction = 0;
+	
+	selectTile.color = '#00000000';
+	
 	updateGrid();
 }
 
-function checkUnit() {
+function rotateUnit() {
+	grid[selectedCord[0]][selectedCord[1]].direction += 1;
+}
 
+function checkUnit(evt) {
+	var correctionPos = [evt.clientX - offPos[0], evt.clientY - offPos[1]];
+	var i = Math.floor(correctionPos[0]/tileSize);
+	var j = Math.floor(correctionPos[1]/tileSize);
+	console.log(i + ", " + j);
+	selectTile.x = i * tileSize + 1 + offPos[0];
+	selectTile.y = j * tileSize + 1 + offPos[1];
+	
+	selectedCord = [i, j];
+	
+	selectTile.color = (i<0 || i>=gridSize || j<0 || j>=gridSize)? "#00000000" : "#00000066";
 }
 
 // ----------------------------- Listener --------------------------------
@@ -157,7 +334,7 @@ function gameStart() {
   newPos = [evt.clientX, evt.clientY];
   $gameArea.on('mouseup mousemove', function handler(evt) {
     if (evt.type === 'mouseup') {
-      if(!shifted) { checkUnit(); }
+      if(!shifted) { checkUnit(evt); }
       shifted = false;
       $gameArea.off('mouseup mousemove', handler); 
     } else {
