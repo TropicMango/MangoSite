@@ -77,9 +77,9 @@ function tile(size, x, y, type, direction) { // ctx = myGameArea.context; paint 
     ctx.fillStyle = "#D3D3D3";
     ctx.fillRect(this.x, this.y, this.size, this.size);
     
-    if(type==0){ return; }
+    if(this.type==0){ return; }
     ctx.fillStyle = "red";
-    switch(direction) {
+    switch(this.direction) {
       case 0: //up
         ctx.fillRect(this.x+2, this.y, this.size-4, 3);
         break;
@@ -138,8 +138,15 @@ function resetCamera() {
 }
 
 function addUnit() {
+	console.log(grid[0][0]);
 	grid[0][0].type = 1;
-	grid[0][0].direction = 1;
+	grid[0][0].direction = 2;
+	console.log(grid[0][0]);
+	updateGrid();
+}
+
+function checkUnit() {
+
 }
 
 // ----------------------------- Listener --------------------------------
@@ -150,8 +157,9 @@ function gameStart() {
   newPos = [evt.clientX, evt.clientY];
   $gameArea.on('mouseup mousemove', function handler(evt) {
     if (evt.type === 'mouseup') {
-      //console.log("mouse up");
-      $gameArea.off('mouseup mousemove', handler);
+      if(!shifted) { checkUnit(); }
+      shifted = false;
+      $gameArea.off('mouseup mousemove', handler); 
     } else {
       newPos = [evt.clientX, evt.clientY];
       shifted = true;
