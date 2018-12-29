@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-  <!--<script type='text/javascript' src="https://raw.githack.com/TropicMango/MangoSite/master/src/script/infinity_craft.js"></script>-->
-  <script type='text/javascript' src="../script/infinity_craft.js"></script>
+  <script type='text/javascript' src="https://raw.githack.com/TropicMango/MangoSite/master/src/script/infinity_craft.js"></script>
+  <!--<script type='text/javascript' src="../script/infinity_craft.js"></script>-->
   <head>
     <style>
 	  body {
@@ -11,30 +11,121 @@
 		color: white;
 	  }
 	  #factory_canvas {
-	    border: 1px solid green;
+	    border: 2px solid white;
 	    position: fixed;
 	    width: 80%;
-	    height: calc(100% - 2px);
+	    height: calc(100% - 4px);
 	  }
 	  #selector_canvas {
-	  	border: 1px solid blue;
 	    position: fixed;
-	    left: 80%;
-	    width: calc(20% - 2px);
-	    height: calc(100% - 2px);
+	    left: calc(80% + 4px);
+	    width: calc(20% - 8px);
+	    height: calc(100% - 4px);
+	  }
+	  #money {
+	  	font-size: 3.7vh;
+	  }
+	  .asset {
+	  	position: fixed;
+	    border: 2px solid white;
+	    left: calc(80% + 4px);
+	    width: calc(20% - 8px);
+	    height: calc(20% - 4px);
+	  }
+	  .controlMenu {
+	    position: fixed;
+	    border: 2px solid blue;
+	    left: calc(80% + 4px);
+	    top: calc(20%);
+	    width: calc(20% - 8px);
+	    height: calc(80% - 4px);
+	  }
+	  .menuUnit {
+	  	display: none;
+	  	overflow-wrap: break-word;
+	  }
+	  .center_btn {
+		background-color: black;
+		color: white;
+		font-size: 2.5vh;
+		border: 1px solid white;
+		cursor: pointer;
+		border-radius: 0.5vh;
+		width: 18%; height: 3.7%;
+		left: 81%; top: 15%; 
+		position: fixed;
+	  }
+	  .defaultBtn {
+	    width: calc(50% - 3px);
+	    display: inline-block;
+	    font-size: 2vh;
+	    border: 1px solid grey;
+	    border-radius: 0;
+	    margin: 0;
+	  }
+	  .disabled {
+	  	opacity: 0.6;
+  		pointer-events: none;
+	  }
+	  .hidden {
+	    display: none
 	  }
     </style>
   </head>
   <body onload="startGame()">
     <div id="factory_canvas"> </div>
-    <div id="selector_canvas"> 
-      <div id="units"> </div>
-      <div id="control">
-        <button onclick="resetCamera()" class="ctrl_btn">center</button><br>
-        <button onclick="setUnit(1)" class="ctrl_btn">set mine</button><br>
-        <button onclick="setUnit(2)" class="ctrl_btn">set belt</button><br>
-        <button onclick="setUnit(3)" class="ctrl_btn">set sell</button><br>
-        <button onclick="rotateUnit()" class="ctrl_btn">rotate</button><br>
+    <div id="selector_canvas">
+      <div class="asset">
+        <p id='money'>$0</p>
+        <button onclick="resetCamera()" class="center_btn">center factory</button><br>
+      </div>
+      
+      <div class="controlMenu">
+      	  <button onclick="rotateUnit()" class="defaultBtn">rotate</button>
+		  <button onclick="setUnit(0)" class="defaultBtn">delete unit</button><br>
+	  
+		  <div id="defaultMenu" class="menuUnit">
+		  	<p>Buy Units</p>
+			<button id = "buy mine" onclick="setUnit('mine')" class="ctrl_btn">buy mine</button><br>
+			<button id = "buy belt" onclick="setUnit('belt')" class="ctrl_btn">buy belt</button><br>
+			<button id = "buy store" onclick="setUnit('store')" class="ctrl_btn">buy store</button><br>
+			<button id = "buy combo" onclick="setUnit('combo')" class="ctrl_btn">buy combinator</button><br>
+			<button id = "buy smelt" onclick="setUnit('smelt')" class="ctrl_btn">buy smelter</button><br>
+			<p>Upgrades</p>
+			<button onclick="betterMine()" class="ctrl_btn">better mine</button><br>
+			<button onclick="betterBelt()" class="ctrl_btn">better belt</button><br>
+			<button id = "unlock iron" onclick="unlockOre('iron')" class="ctrl_btn">unlock iron ore<br></button>
+			<button id = "unlock tin" onclick="unlockOre('tin')" class="ctrl_btn">unlock tin ore<br></button>
+			<button id = "unlock silver" onclick="unlockOre('silver')" class="ctrl_btn">unlock silver ore<br></button>
+			<button id = "unlock gold" onclick="unlockOre('gold')" class="ctrl_btn">unlock gold ore<br></button>
+			<button id = "unlock aluminum" onclick="unlockOre('aluminum')" class="ctrl_btn">unlock aluminum ore<br></button>
+			<button id = "unlock zinc" onclick="unlockOre('zinc')" class="ctrl_btn">unlock zinc ore<br></button>
+			<button id = "unlock nickel" onclick="unlockOre('nickel')" class="ctrl_btn">unlock nickel ore<br></button>
+		  </div>
+	  
+		  <div id="mineMenu" class="menuUnit">
+			<button onclick="setUI(0)" class="ctrl_btn">return</button><br>
+			<button id = "copper ore" onclick="setMine('copper ore')" class="miningBtn">mine copper</button><br>
+			<button id = "iron ore" onclick="setMine('iron ore')" class="miningBtn disabled">mine iron</button><br>
+			<button id = "tin ore" onclick="setMine('tin ore')" class="miningBtn disabled">mine tin</button><br>
+			<button id = "silver ore" onclick="setMine('silver ore')" class="miningBtn disabled">mine silver</button><br>
+			<button id = "gold ore" onclick="setMine('gold ore')" class="miningBtn disabled">mine gold</button><br>
+			<button id = "aluminum ore" onclick="setMine('aluminum ore')" class="miningBtn disabled">mine aluminum</button><br>
+			<button id = "zinc ore" onclick="setMine('zinc ore')" class="miningBtn disabled">mine zinc</button><br>
+			<button id = "nickel ore" onclick="setMine('nickel ore')" class="miningBtn disabled">mine nickel</button><br>
+		  </div>
+	  
+		  <div id="comboMenu" class="menuUnit">
+		  	<button onclick="setUI(0)" class="ctrl_btn">return</button><br>
+		  	<p>combine</p>
+			<p id="storedItems"> </p>
+		  </div>
+		  
+		  <div id="smelterMenu" class="menuUnit">
+		  	<button onclick="setUI(0)" class="ctrl_btn">return</button><br>
+		  	<p>smelt</p>
+			<p id="smeltingItems"> </p>
+		  </div>
       </div>
     </div>
   </body>
