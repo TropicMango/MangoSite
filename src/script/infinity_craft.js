@@ -4,6 +4,8 @@ var prevPos=[0,0], newPos=[0,0], offPos=[0,0];
 
 var selectTile, selectedUnit, selectedCord = [-1,-1];
 
+var removedList = [];
+
 var tileSize = 50;
 var gridSize = 10;
 
@@ -298,7 +300,7 @@ function item(x, y, cell, material) {
 		//console.log("this cell: " + grid[this.cell[0]][this.cell[1]]);
 		if(this.currentDir == null){
 			if(this.distance > 100) {
-				removeMaterial(this);
+				addToTrash(this);
 			} else {
 				this.distance++;
 			}
@@ -342,7 +344,11 @@ function item(x, y, cell, material) {
 				break;
 		    }
 			this.distance=0;
-			var hoverUnit = grid[this.cell[0]][this.cell[1]];
+			try{
+				var hoverUnit = grid[this.cell[0]][this.cell[1]];
+			}catch (e){
+				return addToTrash(this);
+			}
 			this.currentDir = hoverUnit.direction;
 			if(hoverUnit.unitType != 'belt') { this.currentDir = null; }
 			if(hoverUnit.unitType == 'store') { 
@@ -357,14 +363,12 @@ function item(x, y, cell, material) {
 				}
 
 				setComboString(this.cell);
-				removeMaterial(this);
+				addToTrash(this);
 			} else if(hoverUnit.unitType == 'smelt') { 
 				if(materialInfo.get(this.material)[2] != null){
 					hoverUnit.storage.push(this);
-				
 					setSmeltString(this.cell);
-				
-					removeMaterial(this);
+					addToTrash(this);
 				}
 			}
 		}
@@ -375,14 +379,20 @@ function item(x, y, cell, material) {
 function sellMaterial (item) {
 	money += materialInfo.get(item.material)[1];
 	updateMoney();
-	removeMaterial(item);
+	addToTrash(item);
 }
 function updateMoney() {
 	document.getElementById('money').innerHTML = "$"+money;
 }
-function removeMaterial(item) {
-	var index = materials.findIndex(function(element){ return element.cell == item.cell});
-	delete(materials.splice(index, 1));
+function addToTrash(item) {
+	removedList.push(item);
+}
+function removeList() {
+	removedList.forEach((target) => { 
+		var index = materials.findIndex(function(element){ return element.cell == target.cell});
+		delete(materials.splice(index, 1));
+	});
+	removedList = [];
 }
 
 // ---------------------------------- Unit Update --------------------------------
@@ -392,6 +402,7 @@ function updateGameArea() {
     myGameArea.frameNo += 1;
     
     (shifted) ? shiftGrid() : updateGrid();
+    removeList();
 }
 
 function updateGrid() {
@@ -550,13 +561,18 @@ function setSmeltString(currentCell) {
 
 // ----------------------------- Upgrades --------------------------------
 
-function betterMine() {
+function fasterMine() {
 	mineSpeed=Math.round(mineSpeed*0.75);
-	console.log(mineSpeed);
+	console.log("mine speed: " + mineSpeed);
 }
 
-function betterBelt() {
+function fasterBelt() {
 	beltSpeed++;
+}
+
+function fasterSmelt() {
+	smeltSpeed=Math.round(smeltSpeed*0.75);
+	console.log("smelt speed: " + smeltSpeed);
 }
 
 function unlockOre(ore) {
