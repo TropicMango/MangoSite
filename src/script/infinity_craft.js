@@ -12,16 +12,18 @@ var gridSize = 10;
 var mineSpeed = 200;//200
 var beltSpeed = 1;
 var smeltSpeed = 150;//150
+var craftSpeed = 1;
 
 var unitInfo = new Map([ //2d array [unit ID][price / price increase]
 	['mine', [10, 1.5, 'w']], // mine
 	['belt', [5, 1.2, 'q']], // belt
-	['store', [10, 2, 'e']], // store
-	['combo', [100, 1.5, 'r']], // combinator
-	['smelt', [500, 1.5, 't']] // smelter
+	['market', [10, 2, 'e']], // store
+	['fabricator', [100, 1.5, 'r']], // combinator
+	['furnace', [500, 1.5, 't']] // smelter
 ]);
 
 var materialInfo = new Map([ //[color, price, smelt]
+	//raw material
 	['copper ore', ['#54fa9c', 5, 'copper']],
 	['iron ore', ['#e01adb', 10, 'iron']],
 	['tin ore', ['#ca6c61', 15, 'tin']],
@@ -30,7 +32,7 @@ var materialInfo = new Map([ //[color, price, smelt]
 	['aluminum ore', ['#344c7d', 30, 'aluminum']],
 	['zinc ore', ['#9c6690', 35, 'zinc']],
 	['nickel ore', ['#86c538', 40, 'nickel']],
-	//smelted items
+	//smeltTarget items
 	['copper', ['#86c538', 50, null]],
 	['iron', ['#86c538', 100, null]],
 	['tin', ['#86c538', 150, null]],
@@ -38,7 +40,15 @@ var materialInfo = new Map([ //[color, price, smelt]
 	['gold', ['#86c538', 250, null]],
 	['aluminum', ['#86c538', 300, null]],
 	['zinc', ['#86c538', 350, null]],
-	['nickel', ['#86c538', 400, null]]
+	['nickel', ['#86c538', 400, null]],
+	//crafted items
+	['wire', ['#86c538', 100, null]],
+	['switch', ['#86c538', 200, null]]
+]);
+
+var craftingRecipe = new Map([
+	['wire', 200, [['copper', 1]] ],
+	['switch', 500 , [['wire', 2], ['iron', 1]] ]
 ]);
 
 var lastDir = 0;
@@ -125,42 +135,59 @@ function tile(size, x, y, unitType, direction, storage) { // ctx = myGameArea.co
   
   this.storage = storage;
   
-  this.update = function() {
+  this.update = function() { // individual updates for each unit type
     switch(this.unitType) {
   	  case 'none':
-  	  	blank(this);
-    	break;
-    	
+  	  	updateBlank(this);
+    	break;  	
   	  case 'mine': 
-  	    miner(this);
+  	    updateMine(this);
   	    break;
-  	    
   	  case 'belt': 
-  	    belt(this);
+  	    updateBelt(this);
   	    break;
-  	    
-  	  case 'store': 
-  	    store(this);
+  	  case 'market': 
+  	    updateStore(this);
   	    break;
-  	    
-  	  case 'combo': 
-  	    combine(this);
+  	  case 'fabricator': 
+  	    updateCombo(this);
   	    break;
-  	    
-  	  case 'smelt': 
-  	    smelt(this);
+  	  case 'furnace': 
+  	    updateSmelt(this);
+  	    break;
+  	}  
+  }
+  
+  this.hover = function(item) {
+    switch(this.unitType) {
+  	  case 'none':
+    	break;  	
+  	  case 'mine': 
+  	    //hoverMine(this, item);
+  	    break;
+  	  case 'belt': 
+  	    hoverBelt(this, item);
+  	    break;
+  	  case 'market': 
+  	    hoverStore(this, item);
+  	    break;
+  	  case 'fabricator': 
+  	    hoverCombo(this, item);
+  	    break;
+  	  case 'furnace': 
+  	    hoverSmelt(this, item);
   	    break;
   	}  
   }
 }
 
-function blank(unit) { // ------------------ Blank ------------------
+function updateBlank(unit) { // ------------------ Blank ------------------
 	ctx = myGameArea.context;
     ctx.fillStyle = unit.color;
 	ctx.fillRect(unit.x, unit.y, unit.size, unit.size);
 }
 
-function miner(unit) { // ------------------ Mine ------------------
+function updateMine(unit) { // ------------------ Mine ------------------
 
 	if(everyinterval(mineSpeed)){
 	    materials.push(new item(unit.x, unit.y, unit.cell, unit.storage));
@@ -186,7 +213,9 @@ function miner(unit) { // ------------------ Mine ------------------
 	}
 }
 
-function belt(unit) { // ------------------ Belt ------------------
+//function hoverMine(unit, item) { }
+
+function updateBelt(unit) { // ------------------ Belt ------------------
 	ctx = myGameArea.context;
     ctx.fillStyle = '#b7d3ff';
 	ctx.fillRect(unit.x, unit.y, unit.size, unit.size);
@@ -207,7 +236,11 @@ function belt(unit) { // ------------------ Belt ------------------
 	}
 }
 
-function store(unit) { // ------------------ store ------------------
+function hoverBelt(unit, item) {
+	item.currentDir = unit.direction;
+}
+
+function updateStore(unit) { // ------------------ store ------------------
 	ctx = myGameArea.context;
     ctx.fillStyle = '#b7ffd3';
 	ctx.fillRect(unit.x, unit.y, unit.size, unit.size);
@@ -228,7 +261,21 @@ function store(unit) { // ------------------ store ------------------
 	}
 }
 
-function combine(unit) { // ------------------ combinator ------------------
+function hoverStore(unit, item) {
+	sellMaterial(item); 
+}
+
+function updateCombo(unit) { // ------------------ combinator ------------------
+	if(unit.craft == true) {
+		if(myGameArea.frameNo > unit.craftTimer) {
+			materials.push(new item(unit.x, unit.y, unit.cell, unit.craftTarget));
+			unit.storage.splice(0, 1);
+			printSmeltStorage(unit.cell);
+		}
+	}else{
+		unit.craftTimer =  myGameArea.frameNo + craftSpeed;
+	}
+
 	ctx = myGameArea.context;
     ctx.fillStyle = '#EE82EE';
 	ctx.fillRect(unit.x, unit.y, unit.size, unit.size);
@@ -249,15 +296,30 @@ function combine(unit) { // ------------------ combinator ------------------
 	}
 }
 
-function smelt(unit) { // ------------------ smelter ------------------
-	if(unit.storage.length > 0) {
-		if(unit.smeltTimer == undefined) { unit.smeltTimer =  myGameArea.frameNo + smeltSpeed; }
-		else if(myGameArea.frameNo > unit.smeltTimer) {
-			materials.push(new item(unit.x, unit.y, unit.cell, materialInfo.get(unit.storage[0].material)[2]));
-			unit.storage.splice(0, 1);
-			setSmeltString(unit.cell);
-			if(unit.storage.length == 0) { unit.smeltTimer =  undefined }
-			else { unit.smeltTimer =  myGameArea.frameNo + smeltSpeed; }
+function hoverCombo(unit, item) {
+	var unitMap = unit.storage;
+	if(unitMap.has(item.material)){ //add to the map
+		unitMap.set(item.material, unitMap.get(item.material) + 1);
+	}else{
+		unitMap.set(item.material, 1);
+	}
+
+	setComboStorage(item.cell);
+	addToTrash(item);
+
+	
+}
+
+function updateSmelt(unit) { // ------------------ smelter ------------------
+	var unitMap = unit.storage;
+	if(unitMap.size > 0) {
+		if(unit.smelting) {
+			if(myGameArea.frameNo > unit.smeltTimer) { // output item
+				materials.push(new item(unit.x, unit.y, unit.cell, materialInfo.get(unit.smeltTarget)[2]));
+				setSmeltTarget(unit, unitMap.keys().next().value);
+			}
+		}else{
+			setSmeltTarget(unit, unitMap.keys().next().value); // creates the delay
 		}
 	}
 	
@@ -279,6 +341,39 @@ function smelt(unit) { // ------------------ smelter ------------------
 		ctx.fillRect(unit.x + unit.size - 7, unit.y+4, 7, unit.size-8);
 		break;
 	}
+}
+
+function hoverSmelt(unit, item) {
+	if(materialInfo.get(item.material)[2] != null){
+		var unitMap = unit.storage;
+		if(unit.storage.size > 0 || unit.smelting == true){ 
+			if(unitMap.has(item.material)){ //add to the map
+				unitMap.set(item.material, unitMap.get(item.material) + 1);
+			}else{
+				unitMap.set(item.material, 1);
+			}
+			printSmeltStorage(item.cell);
+		}else{ // if nothing is smelting add directly onto the queue (ALSO EXTREMELY SKETCHY)
+			setSmeltTarget(unit, item.material);
+		}
+		
+		addToTrash(item);
+	}
+}
+
+function setSmeltTarget(unit, target) {
+	unit.smelting = true;
+	unit.smeltTarget = target;
+	printSmeltTarget(target);
+	unit.smeltTimer =  myGameArea.frameNo + smeltSpeed;
+	
+	if(unit.storage.get(unit.smeltTarget) > 1){ // if the smeltTarget item is the last
+		unit.storage.set(unit.smeltTarget, unit.storage.get(unit.smeltTarget) - 1); // removed one from the set
+	}else{
+		unit.storage.delete(unit.smeltTarget); // removed the entire element set
+	}
+	
+	printSmeltStorage(unit.cell);
 }
 
 // -------------------------------------------- ITEM ------------------------------------------------
@@ -306,7 +401,6 @@ function item(x, y, cell, material) {
 			}
 			return;
 		}
-		
 		switch(this.currentDir % 4){
 		  case 0: //up
 			this.y-=beltSpeed;
@@ -343,36 +437,15 @@ function item(x, y, cell, material) {
 				this.x -= (this.distance > tileSize)? this.distance - tileSize : 0;
 				break;
 		    }
+		    this.currentDir = null;
 			this.distance=0;
-			try{
+			try{  // catch if off grid
 				var hoverUnit = grid[this.cell[0]][this.cell[1]];
+				hoverUnit.hover(this);
 			}catch (e){
 				return addToTrash(this);
 			}
-			this.currentDir = hoverUnit.direction;
-			if(hoverUnit.unitType != 'belt') { this.currentDir = null; }
-			if(hoverUnit.unitType == 'store') { 
-				return sellMaterial(this); 
-			} else if(hoverUnit.unitType == 'combo') { 
-				var unitMap = hoverUnit.storage
-				
-				if(unitMap.has(this.material)){ //add to the map
-					unitMap.set(this.material, unitMap.get(this.material) + 1);
-				}else{
-					unitMap.set(this.material, 1);
-				}
-
-				setComboString(this.cell);
-				addToTrash(this);
-			} else if(hoverUnit.unitType == 'smelt') { 
-				if(materialInfo.get(this.material)[2] != null){
-					hoverUnit.storage.push(this);
-					setSmeltString(this.cell);
-					addToTrash(this);
-				}
-			}
-		}
-		
+		}	
 	}
 }
 
@@ -466,24 +539,28 @@ function setMine(oreID) {
 
 function setUnit(unitID) {
 	if(selectedUnit.unitType == unitID){ return rotateUnit(); }
-	else{ selectedUnit.unitType = unitID; }
+	else{ 
+		if(selectedUnit.unitType != 'none'){ lastDir = selectedUnit.direction; }
+		selectedUnit.unitType = unitID; 
+	}
 	selectedUnit.direction = lastDir;
 	
 	switch(unitID){
 	  case 'mine':
 		selectedUnit.storage = 'copper ore';
 		break;
-	  case 'combo': 
+	  case 'fabricator': 
 		selectedUnit.storage = new Map();
 		break;
-	  case 'smelt': 
-		selectedUnit.storage = [];
+	  case 'furnace': 
+		selectedUnit.storage = new Map();
 		break;
 	}
 	
 	selectTile.color = '#00000000';
 	
-	money -= unitInfo.get(unitID)[0];
+	try { money -= unitInfo.get(unitID)[0]; 
+	}catch (e){}// deleting units will call this, temporarily solution
 	unitInfo.get(unitID)[0] = Math.floor( unitInfo.get(unitID)[0] * unitInfo.get(unitID)[1] );
 	document.getElementById('buy ' + unitID).innerHTML = unitID + '(' + unitInfo.get(unitID)[2] + '): $' + unitInfo.get(unitID)[0];
 	updateMoney();
@@ -523,13 +600,13 @@ function setUI(unitType) {
 	  case 'mine': //mine
 		document.getElementById('mineMenu').style.display = "block";
 		break;
-	  case 'combo': //combinator
+	  case 'fabricator': //combinator
 		document.getElementById('comboMenu').style.display = "block";
-		setComboString(selectedUnit.cell);
+		setComboStorage(selectedUnit.cell);
 		break;
-	  case 'smelt':
+	  case 'furnace':
 	  	document.getElementById('smelterMenu').style.display = "block";
-		setSmeltString(selectedUnit.cell);
+		printSmeltStorage(selectedUnit.cell);
 		break;
 	  default: //else
 		document.getElementById('defaultMenu').style.display = "block";
@@ -537,26 +614,34 @@ function setUI(unitType) {
 	}
 }
 
-function setComboString(currentCell) {
+function setComboStorage(currentCell) {
 	if(selectedUnit.cell[0] != currentCell[0] || selectedUnit.cell[1] != currentCell[1] || selectedUnit.color == "#00000000"){return;}
+	
+	document.getElementById('comboStorage').innerHTML = mapToString(currentCell);
+}
 
+function setComboTarget(target) {
+	document.getElementById('comboTarget').innerHTML = target;
+}
+
+function printSmeltStorage(currentCell) {
+	if(selectedUnit.cell[0] != currentCell[0] || selectedUnit.cell[1] != currentCell[1] || selectedUnit.color == "#00000000"){return;}
+	
+	document.getElementById('smeltingStorage').innerHTML = mapToString(currentCell);
+}
+
+function printSmeltTarget(target) {
+	document.getElementById('smeltingTarget').innerHTML = target;
+}
+
+function mapToString(cell) {
 	var returnString = '';
-	//console.log(selectedUnit.storage);
 	
 	selectedUnit.storage.forEach((value, key, map) => {
   		returnString += key + ": " + value + "<br>";
 	})
 	
-	document.getElementById('storedItems').innerHTML = returnString;
-}
-
-function setSmeltString(currentCell) {
-	if(selectedUnit.cell[0] != currentCell[0] || selectedUnit.cell[1] != currentCell[1] || selectedUnit.color == "#00000000"){return;}
-
-	var returnString = '';
-	//console.log(selectedUnit.storage)
-	selectedUnit.storage.forEach((value) => { returnString += value.material + "<br>"; })
-	document.getElementById('smeltingItems').innerHTML = returnString;
+	return (returnString.length == 0)? 'none' : returnString;
 }
 
 // ----------------------------- Upgrades --------------------------------
@@ -595,11 +680,11 @@ function gameStart() {
     }else if(code == 87){ // w: mine
       setUnit('mine');
     }else if(code == 69){ // e: store
-      setUnit('store');
+      setUnit('market');
     }else if(code == 82){ // r: combinator
-      setUnit('combo');
+      setUnit('fabricator');
     }else if(code == 84){ // t: smelter
-      setUnit('smelt');
+      setUnit('furnace');
     }
   });
   

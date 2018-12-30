@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-  <script type='text/javascript' src="https://raw.githack.com/TropicMango/MangoSite/master/src/script/infinity_craft.js"></script>
-  <!--<script type='text/javascript' src="../script/infinity_craft.js"></script>-->
+  <!--<script type='text/javascript' src="https://raw.githack.com/TropicMango/MangoSite/master/src/script/infinity_craft.js"></script>-->
+  <script type='text/javascript' src="../script/infinity_craft.js"></script>
   <head>
     <style>
 	  body {
@@ -82,14 +82,14 @@
       
       <div class="controlMenu">
       	  <button onclick="rotateUnit()" class="defaultBtn">rotate</button>
-		  <button onclick="setUnit(0)" class="defaultBtn">delete unit</button><br>
+		  <button onclick="setUnit('none')" class="defaultBtn">delete unit</button><br>
 	  
 		  <div id="defaultMenu" class="menuUnit">
 		  	<p>Buy Units</p>
 			<button id = "buy mine" onclick="setUnit('mine')" class="ctrl_btn">buy mine</button><br>
 			<button id = "buy belt" onclick="setUnit('belt')" class="ctrl_btn">buy belt</button><br>
-			<button id = "buy store" onclick="setUnit('store')" class="ctrl_btn">buy store</button><br>
-			<button id = "buy combo" onclick="setUnit('combo')" class="ctrl_btn">buy combinator</button><br>
+			<button id = "buy market" onclick="setUnit('market')" class="ctrl_btn">buy store</button><br>
+			<button id = "buy fabricator" onclick="setUnit('fabricator')" class="ctrl_btn">buy combinator</button><br>
 			<button id = "buy smelt" onclick="setUnit('smelt')" class="ctrl_btn">buy smelter</button><br>
 			<p>Upgrades</p>
 			<button onclick="fasterMine()" class="ctrl_btn">faster mine</button><br>
@@ -118,15 +118,29 @@
 	  
 		  <div id="comboMenu" class="menuUnit">
 		  	<button onclick="setUI(0)" class="ctrl_btn">return</button><br>
-		  	<p>combine</p>
-			<p id="storedItems"> </p>
+			<p><b>Currently Producing</b></p>
+			<p id="comboTarget">none</p>
+			<p><b>Storage</b></p>
+			<p id="comboStorage">none</p>
+			<p><b>Production Target</b></p>
+			<button id = "craft wire" onclick="setCombo('wire')" class="">craft wire</button><br>
+			<button id = "craft switch" onclick="setCombo('switch')" class="">craft switch</button><br>
+			<button id = "tin ore" onclick="setMine('tin ore')" class="miningBtn disabled">mine tin</button><br>
+			<button id = "silver ore" onclick="setMine('silver ore')" class="miningBtn disabled">mine silver</button><br>
+			<button id = "gold ore" onclick="setMine('gold ore')" class="miningBtn disabled">mine gold</button><br>
+			<button id = "aluminum ore" onclick="setMine('aluminum ore')" class="miningBtn disabled">mine aluminum</button><br>
+			<button id = "zinc ore" onclick="setMine('zinc ore')" class="miningBtn disabled">mine zinc</button><br>
+			<button id = "nickel ore" onclick="setMine('nickel ore')" class="miningBtn disabled">mine nickel</button><br>
 		  </div>
 		  
 		  <div id="smelterMenu" class="menuUnit">
 		  	<button onclick="setUI(0)" class="ctrl_btn">return</button><br>
-		  	<p>smelt</p>
-			<p id="smeltingItems"> </p>
+		  	<p><b>Currently Smelting</b></p>
+		  	<p id="smeltingTarget">none</p>
+		  	<p><b>Storage</b></p>
+			<p id="smeltingStorage">none</p>
 		  </div>
+		  
       </div>
     </div>
   </body>
