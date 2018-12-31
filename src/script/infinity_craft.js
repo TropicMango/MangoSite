@@ -16,7 +16,7 @@ var craftSpeed = 1;
 
 var unitInfo = new Map([ //2d array [unit ID][price / price increase]
 	['mine', [10, 1.5, 'w']], // mine
-	['belt', [5, 1.2, 'q']], // belt
+	['conveyer', [5, 1.2, 'q']], // belt
 	['market', [10, 2, 'e']], // store
 	['fabricator', [100, 1.5, 'r']], // combinator
 	['furnace', [500, 1.5, 't']] // smelter
@@ -47,8 +47,8 @@ var materialInfo = new Map([ //[color, price, smelt]
 ]);
 
 var craftingRecipe = new Map([
-	['wire', 200, [['copper', 1]] ],
-	['switch', 500 , [['wire', 2], ['iron', 1]] ]
+	['wire', [200, [['copper', 1]]] ],
+	['switch', [500 , [['wire', 2], ['iron', 1]]] ]
 ]);
 
 var lastDir = 0;
@@ -143,14 +143,14 @@ function tile(size, x, y, unitType, direction, storage) { // ctx = myGameArea.co
   	  case 'mine': 
   	    updateMine(this);
   	    break;
-  	  case 'belt': 
+  	  case 'conveyer': 
   	    updateBelt(this);
   	    break;
   	  case 'market': 
   	    updateStore(this);
   	    break;
   	  case 'fabricator': 
-  	    updateCombo(this);
+  	    updateCraft(this);
   	    break;
   	  case 'furnace': 
   	    updateSmelt(this);
@@ -165,14 +165,14 @@ function tile(size, x, y, unitType, direction, storage) { // ctx = myGameArea.co
   	  case 'mine': 
   	    //hoverMine(this, item);
   	    break;
-  	  case 'belt': 
+  	  case 'conveyer': 
   	    hoverBelt(this, item);
   	    break;
   	  case 'market': 
   	    hoverStore(this, item);
   	    break;
   	  case 'fabricator': 
-  	    hoverCombo(this, item);
+  	    hoverCraft(this, item);
   	    break;
   	  case 'furnace': 
   	    hoverSmelt(this, item);
@@ -265,16 +265,8 @@ function hoverStore(unit, item) {
 	sellMaterial(item); 
 }
 
-function updateCombo(unit) { // ------------------ combinator ------------------
-	if(unit.craft == true) {
-		if(myGameArea.frameNo > unit.craftTimer) {
-			materials.push(new item(unit.x, unit.y, unit.cell, unit.craftTarget));
-			unit.storage.splice(0, 1);
-			printSmeltStorage(unit.cell);
-		}
-	}else{
-		unit.craftTimer =  myGameArea.frameNo + craftSpeed;
-	}
+function updateCraft(unit) { // ------------------ fabricator ------------------
+	//copy the other one
 
 	ctx = myGameArea.context;
     ctx.fillStyle = '#EE82EE';
@@ -296,27 +288,34 @@ function updateCombo(unit) { // ------------------ combinator ------------------
 	}
 }
 
-function hoverCombo(unit, item) {
+function hoverCraft(unit, item) {
+	console.log(craftingRecipe.get(unit.craftTarget));
+
 	var unitMap = unit.storage;
 	if(unitMap.has(item.material)){ //add to the map
 		unitMap.set(item.material, unitMap.get(item.material) + 1);
 	}else{
 		unitMap.set(item.material, 1);
 	}
-
-	setComboStorage(item.cell);
-	addToTrash(item);
-
 	
+	printCraftStorage(item.cell);
+	
+	addToTrash(item);
 }
 
 function updateSmelt(unit) { // ------------------ smelter ------------------
 	var unitMap = unit.storage;
-	if(unitMap.size > 0) {
+	if(unitMap.size > 0 || unit.smelting) {
 		if(unit.smelting) {
 			if(myGameArea.frameNo > unit.smeltTimer) { // output item
 				materials.push(new item(unit.x, unit.y, unit.cell, materialInfo.get(unit.smeltTarget)[2]));
-				setSmeltTarget(unit, unitMap.keys().next().value);
+				if(unitMap.size > 0){
+					setSmeltTarget(unit, unitMap.keys().next().value);
+				}else{
+					unit.smelting = false;
+					printSmeltStorage('none');
+					printSmeltTarget('none');
+				}
 			}
 		}else{
 			setSmeltTarget(unit, unitMap.keys().next().value); // creates the delay
@@ -537,6 +536,12 @@ function setMine(oreID) {
 	}
 }
 
+function setCraft(recipieID) {
+	if(selectedUnit.unitType == 'fabricator') {
+		selectedUnit.craftTarget = recipieID;
+	}
+}
+
 function setUnit(unitID) {
 	if(selectedUnit.unitType == unitID){ return rotateUnit(); }
 	else{ 
@@ -594,15 +599,15 @@ function selectUnit(evt) {
 function setUI(unitType) {
 	document.getElementById('defaultMenu').style.display = "none";
 	document.getElementById('mineMenu').style.display = "none";
-	document.getElementById('comboMenu').style.display = "none";
+	document.getElementById('craftMenu').style.display = "none";
 	document.getElementById('smelterMenu').style.display = "none";
 	switch(unitType) {
 	  case 'mine': //mine
 		document.getElementById('mineMenu').style.display = "block";
 		break;
 	  case 'fabricator': //combinator
-		document.getElementById('comboMenu').style.display = "block";
-		setComboStorage(selectedUnit.cell);
+		document.getElementById('craftMenu').style.display = "block";
+		printCraftStorage(selectedUnit.cell);
 		break;
 	  case 'furnace':
 	  	document.getElementById('smelterMenu').style.display = "block";
@@ -614,14 +619,16 @@ function setUI(unitType) {
 	}
 }
 
-function setComboStorage(currentCell) {
+// ---------------------------------- back to HTML -------------------------------------
+
+function printCraftStorage(currentCell) {
 	if(selectedUnit.cell[0] != currentCell[0] || selectedUnit.cell[1] != currentCell[1] || selectedUnit.color == "#00000000"){return;}
 	
-	document.getElementById('comboStorage').innerHTML = mapToString(currentCell);
+	document.getElementById('craftStorage').innerHTML = mapToString(currentCell);
 }
 
-function setComboTarget(target) {
-	document.getElementById('comboTarget').innerHTML = target;
+function setCraftTarget(target) {
+	document.getElementById('craftTarget').innerHTML = target;
 }
 
 function printSmeltStorage(currentCell) {
@@ -676,7 +683,7 @@ function gameStart() {
     //selectUnit(evt);
   	var code = evt.keyCode || evt.which;
     if(code == 81){ // q: belt
-      setUnit('belt');
+      setUnit('conveyer');
     }else if(code == 87){ // w: mine
       setUnit('mine');
     }else if(code == 69){ // e: store

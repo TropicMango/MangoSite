@@ -87,10 +87,10 @@
 		  <div id="defaultMenu" class="menuUnit">
 		  	<p>Buy Units</p>
 			<button id = "buy mine" onclick="setUnit('mine')" class="ctrl_btn">buy mine</button><br>
-			<button id = "buy belt" onclick="setUnit('belt')" class="ctrl_btn">buy belt</button><br>
+			<button id = "buy conveyer" onclick="setUnit('conveyer')" class="ctrl_btn">buy belt</button><br>
 			<button id = "buy market" onclick="setUnit('market')" class="ctrl_btn">buy store</button><br>
 			<button id = "buy fabricator" onclick="setUnit('fabricator')" class="ctrl_btn">buy combinator</button><br>
-			<button id = "buy smelt" onclick="setUnit('smelt')" class="ctrl_btn">buy smelter</button><br>
+			<button id = "buy furnace" onclick="setUnit('furnace')" class="ctrl_btn">buy smelter</button><br>
 			<p>Upgrades</p>
 			<button onclick="fasterMine()" class="ctrl_btn">faster mine</button><br>
 			<button onclick="fasterBelt()" class="ctrl_btn">faster belt</button><br>
@@ -116,21 +116,15 @@
 			<button id = "nickel ore" onclick="setMine('nickel ore')" class="miningBtn disabled">mine nickel</button><br>
 		  </div>
 	  
-		  <div id="comboMenu" class="menuUnit">
+		  <div id="craftMenu" class="menuUnit">
 		  	<button onclick="setUI(0)" class="ctrl_btn">return</button><br>
 			<p><b>Currently Producing</b></p>
-			<p id="comboTarget">none</p>
+			<p id="craftTarget">none</p>
 			<p><b>Storage</b></p>
-			<p id="comboStorage">none</p>
+			<p id="craftStorage">none</p>
 			<p><b>Production Target</b></p>
-			<button id = "craft wire" onclick="setCombo('wire')" class="">craft wire</button><br>
-			<button id = "craft switch" onclick="setCombo('switch')" class="">craft switch</button><br>
-			<button id = "tin ore" onclick="setMine('tin ore')" class="miningBtn disabled">mine tin</button><br>
-			<button id = "silver ore" onclick="setMine('silver ore')" class="miningBtn disabled">mine silver</button><br>
-			<button id = "gold ore" onclick="setMine('gold ore')" class="miningBtn disabled">mine gold</button><br>
-			<button id = "aluminum ore" onclick="setMine('aluminum ore')" class="miningBtn disabled">mine aluminum</button><br>
-			<button id = "zinc ore" onclick="setMine('zinc ore')" class="miningBtn disabled">mine zinc</button><br>
-			<button id = "nickel ore" onclick="setMine('nickel ore')" class="miningBtn disabled">mine nickel</button><br>
+			<button id = "craft wire" onclick="setCraft('wire')" class="">craft wire</button><br>
+			<button id = "craft switch" onclick="setCraft('switch')" class="">craft switch</button><br>
 		  </div>
 		  
 		  <div id="smelterMenu" class="menuUnit">
