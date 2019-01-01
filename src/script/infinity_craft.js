@@ -16,10 +16,10 @@ var craftSpeed = 1;
 
 var unitInfo = new Map([ //2d array [unit ID][price / price increase]
 	['mine', [10, 1.5, 'w']], // mine
-	['conveyer', [5, 1.2, 'q']], // belt
+	['conveyor', [5, 1.2, 'q']], // belt
 	['market', [10, 2, 'e']], // store
-	['fabricator', [100, 1.5, 'r']], // combinator
-	['furnace', [500, 1.5, 't']] // smelter
+	['fabricator', [500, 1.5, 'r']], // combinator
+	['furnace', [100, 1.5, 't']] // smelter
 ]);
 
 var materialInfo = new Map([ //[color, price, smelt]
@@ -42,7 +42,7 @@ var materialInfo = new Map([ //[color, price, smelt]
 	['zinc', ['#86c538', 350, null]],
 	['nickel', ['#86c538', 400, null]],
 	//crafted items
-	['wire', ['#86c538', 100, null]],
+	['wire', ['#00c538', 100, null]],
 	['switch', ['#86c538', 200, null]]
 ]);
 
@@ -64,7 +64,7 @@ function startGame() {
 	updateMoney();
     initiateGrid();
     myGameArea.start();
-    initalizePrice();
+    initializePrice();
     gameStart();
     resetCamera();
 }
@@ -82,7 +82,7 @@ function initiateGrid() {
 	selectTile.color = "#00000000";
 }
 
-function initalizePrice() {
+function initializePrice() {
 	unitInfo.forEach((value, key, map) => {
 		console.log('buy ' + key);
   		document.getElementById('buy ' + key).innerHTML = key + '(' + value[2] + '): $' + value[0];
@@ -143,7 +143,7 @@ function tile(size, x, y, unitType, direction, storage) { // ctx = myGameArea.co
   	  case 'mine': 
   	    updateMine(this);
   	    break;
-  	  case 'conveyer': 
+  	  case 'conveyor':
   	    updateBelt(this);
   	    break;
   	  case 'market': 
@@ -165,7 +165,7 @@ function tile(size, x, y, unitType, direction, storage) { // ctx = myGameArea.co
   	  case 'mine': 
   	    //hoverMine(this, item);
   	    break;
-  	  case 'conveyer': 
+  	  case 'conveyor':
   	    hoverBelt(this, item);
   	    break;
   	  case 'market': 
@@ -266,8 +266,26 @@ function hoverStore(unit, item) {
 }
 
 function updateCraft(unit) { // ------------------ fabricator ------------------
-	//copy the other one
-
+	var available = checkCraftTarget(unit, unit.storage);
+	if(unit.crafting) {
+		console.log('crafting');
+		if(myGameArea.frameNo > unit.craftTimer) { // output item
+			materials.push(new item(unit.x, unit.y, unit.cell, unit.craftTarget));
+			if(available){
+				setCraftTarget(unit, unit.storage);
+			}else{
+				unit.crafting = false;
+				printCraftStorage('none');
+			}
+		}
+	}else{
+		console.log('not crafting: ' + available);
+		if(available){
+			setCraftTarget(unit, unit.storage); // creates the delay
+			console.log('unit set');
+		}
+	}
+	
 	ctx = myGameArea.context;
     ctx.fillStyle = '#EE82EE';
 	ctx.fillRect(unit.x, unit.y, unit.size, unit.size);
@@ -289,35 +307,58 @@ function updateCraft(unit) { // ------------------ fabricator ------------------
 }
 
 function hoverCraft(unit, item) {
-	console.log(craftingRecipe.get(unit.craftTarget));
+	//console.log(craftingRecipe.get(unit.craftTarget)[1]);
 
 	var unitMap = unit.storage;
+
 	if(unitMap.has(item.material)){ //add to the map
 		unitMap.set(item.material, unitMap.get(item.material) + 1);
 	}else{
 		unitMap.set(item.material, 1);
 	}
-	
+
 	printCraftStorage(item.cell);
 	
 	addToTrash(item);
 }
 
+function checkCraftTarget(unit, unitMap){
+	if(unit.craftTarget == undefined){ return false; }
+	var materialList = craftingRecipe.get(unit.craftTarget)[1];
+	var check = true;
+	materialList.forEach((value) => {
+		if(!unitMap.has(value[0]) || unitMap.get(value[0]) < value[1] || !check){
+			check = false;
+		}
+	})
+	return check;
+}
+	
+function setCraftTarget(unit, unitMap){
+	var materialList = craftingRecipe.get(unit.craftTarget)[1];
+	materialList.forEach((value) => {
+		unitMap.set(value[0], unitMap.get(value[0]) - value[1]);
+	})
+	
+	unit.crafting = true;
+	unit.craftTimer =  myGameArea.frameNo + craftingRecipe.get(unit.craftTarget)[0] * craftSpeed;
+}
+
 function updateSmelt(unit) { // ------------------ smelter ------------------
 	var unitMap = unit.storage;
-	if(unitMap.size > 0 || unit.smelting) {
-		if(unit.smelting) {
-			if(myGameArea.frameNo > unit.smeltTimer) { // output item
-				materials.push(new item(unit.x, unit.y, unit.cell, materialInfo.get(unit.smeltTarget)[2]));
-				if(unitMap.size > 0){
-					setSmeltTarget(unit, unitMap.keys().next().value);
-				}else{
-					unit.smelting = false;
-					printSmeltStorage('none');
-					printSmeltTarget('none');
-				}
+	if(unit.smelting) {
+		if(myGameArea.frameNo > unit.smeltTimer) { // output item
+			materials.push(new item(unit.x, unit.y, unit.cell, materialInfo.get(unit.smeltTarget)[2]));
+			if(unitMap.size > 0){
+				setSmeltTarget(unit, unitMap.keys().next().value);
+			}else{
+				unit.smelting = false;
+				printSmeltStorage('none');
+				printSmeltTarget('none');
 			}
-		}else{
+		}
+	}else{
+		if(unitMap.size > 0) {
 			setSmeltTarget(unit, unitMap.keys().next().value); // creates the delay
 		}
 	}
@@ -539,6 +580,7 @@ function setMine(oreID) {
 function setCraft(recipieID) {
 	if(selectedUnit.unitType == 'fabricator') {
 		selectedUnit.craftTarget = recipieID;
+		printCraftTarget(recipieID);
 	}
 }
 
@@ -627,7 +669,7 @@ function printCraftStorage(currentCell) {
 	document.getElementById('craftStorage').innerHTML = mapToString(currentCell);
 }
 
-function setCraftTarget(target) {
+function printCraftTarget(target) {
 	document.getElementById('craftTarget').innerHTML = target;
 }
 
@@ -683,7 +725,7 @@ function gameStart() {
     //selectUnit(evt);
   	var code = evt.keyCode || evt.which;
     if(code == 81){ // q: belt
-      setUnit('conveyer');
+      setUnit('conveyor');
     }else if(code == 87){ // w: mine
       setUnit('mine');
     }else if(code == 69){ // e: store
