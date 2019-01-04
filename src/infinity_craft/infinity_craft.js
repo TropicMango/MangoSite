@@ -10,7 +10,7 @@ var tileSize = 50;
 var gridSize = 10;
 
 var mineSpeed = 200;//200
-var beltSpeed = 1;
+var beltSpeed = 0.5;
 var smeltSpeed = 150;//150
 var craftSpeed = 1;
 
@@ -18,37 +18,55 @@ var unitInfo = new Map([ //2d array [unit ID][price / price increase]
 	['mine', [10, 1.5, 'w']], // mine
 	['conveyor', [5, 1.2, 'q']], // belt
 	['market', [10, 2, 'e']], // store
-	['fabricator', [500, 1.5, 'r']], // combinator
-	['furnace', [100, 1.5, 't']] // smelter
+	['furnace', [100, 1.5, 'r']], // smelter
+	['fabricator', [500, 1.5, 't']] // combinator
 ]);
 
 var materialInfo = new Map([ //[color, price, smelt]
-	//raw material
-	['copper ore', ['#54fa9c', 5, 'copper']],
-	['iron ore', ['#e01adb', 10, 'iron']],
-	['tin ore', ['#ca6c61', 15, 'tin']],
-	['silver ore', ['#64a871', 20, 'silver']],
-	['gold ore', ['#06aaa6', 25, 'gold']],
-	['aluminum ore', ['#344c7d', 30, 'aluminum']],
-	['zinc ore', ['#9c6690', 35, 'zinc']],
-	['nickel ore', ['#86c538', 40, 'nickel']],
+	//minerals
+	['copper ore', ['#54fa9c', 5]],
+	['iron ore', ['#e01adb', 10]],
+	['tin ore', ['#ca6c61', 15]],
+	['silver ore', ['#64a871', 20]],
+	['gold ore', ['#06aaa6', 25]],
+	['aluminum ore', ['#344c7d', 30]],
+	['zinc ore', ['#9c6690', 35]],
+	['nickel ore', ['#86c538', 40]],
+	['wood', ['#ffc538', 50]],
+	
 	//smeltTarget items
-	['copper', ['#86c538', 50, null]],
-	['iron', ['#86c538', 100, null]],
-	['tin', ['#86c538', 150, null]],
-	['silver', ['#86c538', 200, null]],
-	['gold', ['#86c538', 250, null]],
-	['aluminum', ['#86c538', 300, null]],
-	['zinc', ['#86c538', 350, null]],
-	['nickel', ['#86c538', 400, null]],
+	['copper', ['#86c538', 50]],
+	['iron', ['#86c538', 100]],
+	['tin', ['#86c538', 150]],
+	['silver', ['#86c538', 200]],
+	['gold', ['#86c538', 250]],
+	['aluminum', ['#86c538', 300]],
+	['zinc', ['#86c538', 350]],
+	['nickel', ['#86c538', 400]],
+	['coal', ['#ffc538', 500]],
+	
 	//crafted items
-	['wire', ['#00c538', 100, null]],
-	['switch', ['#86c538', 200, null]]
+	['wire', ['#00c538', 100]],
+	['switch', ['#86c538', 200]],
+	['switchboard', ['#06050f', 2000]]
 ]);
 
-var craftingRecipe = new Map([
+var minerals = new Map([
+	['copper ore', ['copper', 0]],
+	['iron ore', ['iron', 10]],
+	['tin ore', ['tin', 20]],
+	['silver ore', ['silver', 30]],
+	['gold ore', ['gold', 40]],
+	['aluminum ore', ['aluminum', 50]],
+	['zinc ore', ['zinc', 60]],
+	['nickel ore', ['nickel', 70]],
+	['wood', ['coal', 70]]
+]);
+
+var craftingRecipe = new Map([ // [time needed, unlock price]
 	['wire', [200, [['copper', 1]]] ],
-	['switch', [500 , [['wire', 2], ['iron', 1]]] ]
+	['switch', [500 , [['wire', 2], ['iron', 1]]] ],
+	['switchboard', [600 , [['switch', 5], ['wood', 5]]] ],
 ]);
 
 var lastDir = 0;
@@ -64,7 +82,7 @@ function startGame() {
 	updateMoney();
     initiateGrid();
     myGameArea.start();
-    initializePrice();
+    initializeButtons();
     gameStart();
     resetCamera();
 }
@@ -82,11 +100,52 @@ function initiateGrid() {
 	selectTile.color = "#00000000";
 }
 
-function initializePrice() {
+function initializeButtons() {
+	// unit purchase buttons
+	var buyUnit = document.getElementById('buyUnitTag');
+	buyUnit.append(document.createElement("br"));
 	unitInfo.forEach((value, key, map) => {
 		console.log('buy ' + key);
-  		document.getElementById('buy ' + key).innerHTML = key + '(' + value[2] + '): $' + value[0];
-	})
+  		
+  		var b = document.createElement('button');
+     	b.onclick = function() { setUnit(key); };
+     	b.innerHTML = key + '(' + value[2] + '): $' + value[0];
+     	b.className = "ctrl_btn";
+     	b.id = "buy " + key;
+     	buyUnit.append(b);
+     	buyUnit.append(document.createElement("br"));
+	});
+	
+	// crafting buttons
+	var productTag = document.getElementById('ProductionTag');
+	productTag.append(document.createElement("br"));
+	craftingRecipe.forEach((value, key, map) => {
+		console.log('craft ' + key);
+  		
+  		var b = document.createElement('button');
+     	b.onclick = function() { setCraft(key); };
+     	b.innerHTML = "craft " + key;
+     	b.className = "ctrl_btn";
+     	b.id = "craft " + key;
+     	productTag.append(b);
+     	productTag.append(document.createElement("br"));
+	});
+	
+	// mine ore buttons
+	var oreMines = document.getElementById('ore mines');
+	oreMines.append(document.createElement("br"));
+	minerals.forEach((value, key, map) => {
+		console.log('mine ' + key);
+  		if(value[1] != -1){ // -1 is un-mineable but smeltable
+			var b = document.createElement('button');
+			b.onclick = function() { setMine(key); };
+			b.innerHTML = 'mine ' + key;
+			b.className = "ctrl_btn";
+			b.id = key + ' ore';
+			oreMines.append(b);
+			oreMines.append(document.createElement("br"));
+     	}
+	});
 }
 // ----------------------------- Canvas --------------------------------
 
@@ -134,6 +193,10 @@ function tile(size, x, y, unitType, direction, storage) { // ctx = myGameArea.co
   this.cell = [x, y];
   
   this.storage = storage;
+  
+  this.unitImg = new Image(320, 320);
+  this.unitImg.src = './img/mine.png';
+  
   
   this.update = function() { // individual updates for each unit type
     switch(this.unitType) {
@@ -190,27 +253,33 @@ function updateBlank(unit) { // ------------------ Blank ------------------
 function updateMine(unit) { // ------------------ Mine ------------------
 
 	if(everyinterval(mineSpeed)){
-	    materials.push(new item(unit.x, unit.y, unit.cell, unit.storage));
+		var rx = Math.random()*tileSize/5 - tileSize/10;
+		var ry = Math.random()*tileSize/5 - tileSize/10;
+	    materials.push(new item(unit.x + rx, unit.y + ry, unit.cell, unit.storage));
 	}
 
 	ctx = myGameArea.context;
-    ctx.fillStyle = '#ffb7d3';
-	ctx.fillRect(unit.x, unit.y, unit.size, unit.size);
-	ctx.fillStyle = "red";
-	switch(unit.direction % 4) {
-	  case 0: //up
-		ctx.fillRect(unit.x+4, unit.y, unit.size-8, 7);
-		break;
-	  case 2: //down
-		ctx.fillRect(unit.x+4, unit.y + unit.size - 8, unit.size-8, 7);
-		break;
-	  case 3: //left
-		ctx.fillRect(unit.x, unit.y+4, 7, unit.size-8);
-		break;
-	  case 1: //right
-		ctx.fillRect(unit.x + unit.size - 7, unit.y+4, 7, unit.size-8);
-		break;
-	}
+	ctx.save();
+	//ctx.rotate(90/180*Math.PI);
+	ctx.drawImage(unit.unitImg, unit.x, unit.y, unit.size, unit.size);
+	ctx.restore();
+//     ctx.fillStyle = '#ffb7d3';
+// 	ctx.fillRect(unit.x, unit.y, unit.size, unit.size);
+//	ctx.fillStyle = "red";
+// 	switch(unit.direction % 4) {
+// 	  case 0: //up
+// 		ctx.fillRect(unit.x+4, unit.y, unit.size-8, 7);
+// 		break;
+// 	  case 2: //down
+// 		ctx.fillRect(unit.x+4, unit.y + unit.size - 8, unit.size-8, 7);
+// 		break;
+// 	  case 3: //left
+// 		ctx.fillRect(unit.x, unit.y+4, 7, unit.size-8);
+// 		break;
+// 	  case 1: //right
+// 		ctx.fillRect(unit.x + unit.size - 7, unit.y+4, 7, unit.size-8);
+// 		break;
+// 	}
 }
 
 //function hoverMine(unit, item) { }
@@ -241,6 +310,7 @@ function hoverBelt(unit, item) {
 }
 
 function updateStore(unit) { // ------------------ store ------------------
+	//unit.offset = 0;
 	ctx = myGameArea.context;
     ctx.fillStyle = '#b7ffd3';
 	ctx.fillRect(unit.x, unit.y, unit.size, unit.size);
@@ -262,15 +332,18 @@ function updateStore(unit) { // ------------------ store ------------------
 }
 
 function hoverStore(unit, item) {
+	//unit.offset += 3;
 	sellMaterial(item); 
 }
 
 function updateCraft(unit) { // ------------------ fabricator ------------------
 	var available = checkCraftTarget(unit, unit.storage);
 	if(unit.crafting) {
-		console.log('crafting');
+		//console.log('crafting');
 		if(myGameArea.frameNo > unit.craftTimer) { // output item
-			materials.push(new item(unit.x, unit.y, unit.cell, unit.craftTarget));
+			var rx = Math.random()*tileSize/5 - tileSize/10;
+			var ry = Math.random()*tileSize/5 - tileSize/10;
+			materials.push(new item(unit.x + rx, unit.y + ry, unit.cell, unit.craftTarget));
 			if(available){
 				setCraftTarget(unit, unit.storage);
 			}else{
@@ -279,7 +352,7 @@ function updateCraft(unit) { // ------------------ fabricator ------------------
 			}
 		}
 	}else{
-		console.log('not crafting: ' + available);
+		//console.log('not crafting: ' + available);
 		if(available){
 			setCraftTarget(unit, unit.storage); // creates the delay
 			console.log('unit set');
@@ -342,13 +415,16 @@ function setCraftTarget(unit, unitMap){
 	
 	unit.crafting = true;
 	unit.craftTimer =  myGameArea.frameNo + craftingRecipe.get(unit.craftTarget)[0] * craftSpeed;
+	printCraftStorage(unit.cell);
 }
 
 function updateSmelt(unit) { // ------------------ smelter ------------------
 	var unitMap = unit.storage;
 	if(unit.smelting) {
 		if(myGameArea.frameNo > unit.smeltTimer) { // output item
-			materials.push(new item(unit.x, unit.y, unit.cell, materialInfo.get(unit.smeltTarget)[2]));
+			var rx = Math.random()*tileSize/5 - tileSize/10;
+			var ry = Math.random()*tileSize/5 - tileSize/10;
+			materials.push(new item(unit.x + rx, unit.y + ry, unit.cell, minerals.get(unit.smeltTarget)[0]));
 			if(unitMap.size > 0){
 				setSmeltTarget(unit, unitMap.keys().next().value);
 			}else{
@@ -384,7 +460,7 @@ function updateSmelt(unit) { // ------------------ smelter ------------------
 }
 
 function hoverSmelt(unit, item) {
-	if(materialInfo.get(item.material)[2] != null){
+	if(minerals.has(item.material)){
 		var unitMap = unit.storage;
 		if(unit.storage.size > 0 || unit.smelting == true){ 
 			if(unitMap.has(item.material)){ //add to the map
@@ -479,20 +555,23 @@ function item(x, y, cell, material) {
 		    }
 		    this.currentDir = null;
 			this.distance=0;
-			try{  // catch if off grid
+			
+			if(this.cell[0] > 0 && this.cell[1] > 0 && this.cell[0] < gridSize && this.cell[1] < gridSize){
 				var hoverUnit = grid[this.cell[0]][this.cell[1]];
-				hoverUnit.hover(this);
-			}catch (e){
-				return addToTrash(this);
 			}
+			hoverUnit.hover(this);
 		}	
 	}
 }
 
 function sellMaterial (item) {
-	money += materialInfo.get(item.material)[1];
+	var amount = materialInfo.get(item.material)[1];
+	money += amount;
 	updateMoney();
+	console.log('pushed');
+	materials.push(new moneyLabel("+" + amount, item.x, item.y));
 	addToTrash(item);
+	
 }
 function updateMoney() {
 	document.getElementById('money').innerHTML = "$"+money;
@@ -506,6 +585,26 @@ function removeList() {
 		delete(materials.splice(index, 1));
 	});
 	removedList = [];
+}
+
+// ------------------------------- moneyLabel ----------------------
+
+function moneyLabel(amount, x, y) {
+	//console.log (Math.floor((Math.random()*11)-5));
+	this.cell = [x, y];
+	this.amount = amount;
+	this.offset = 0;
+	
+	this.update = function() {
+		ctx = myGameArea.context;
+		ctx.font = "20px Arial";
+   		ctx.fillStyle = 'black';
+		ctx.fillText(amount, this.cell[0], this.cell[1] - this.offset);
+		this.offset+=1;
+		if(this.offset > 50) { 
+			addToTrash(this);
+		}
+	}
 }
 
 // ---------------------------------- Unit Update --------------------------------
@@ -607,7 +706,7 @@ function setUnit(unitID) {
 	selectTile.color = '#00000000';
 	
 	try { money -= unitInfo.get(unitID)[0]; 
-	}catch (e){}// deleting units will call this, temporarily solution
+	}catch (e){ console.log(e); }// deleting units will call this, temporarily solution
 	unitInfo.get(unitID)[0] = Math.floor( unitInfo.get(unitID)[0] * unitInfo.get(unitID)[1] );
 	document.getElementById('buy ' + unitID).innerHTML = unitID + '(' + unitInfo.get(unitID)[2] + '): $' + unitInfo.get(unitID)[0];
 	updateMoney();
@@ -730,9 +829,9 @@ function gameStart() {
       setUnit('mine');
     }else if(code == 69){ // e: store
       setUnit('market');
-    }else if(code == 82){ // r: combinator
+    }else if(code == 84){ // t: combinator
       setUnit('fabricator');
-    }else if(code == 84){ // t: smelter
+    }else if(code == 82){ // r: smelter
       setUnit('furnace');
     }
   });
