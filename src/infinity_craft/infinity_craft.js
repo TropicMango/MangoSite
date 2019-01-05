@@ -24,25 +24,15 @@ var unitInfo = new Map([ //2d array [unit ID][price / price increase]
 
 var materialInfo = new Map([ //[color, price, smelt]
 	//minerals
-	['copper ore', ['#54fa9c', 5]],
-	['iron ore', ['#e01adb', 10]],
-	['tin ore', ['#ca6c61', 15]],
-	['silver ore', ['#64a871', 20]],
-	['gold ore', ['#06aaa6', 25]],
-	['aluminum ore', ['#344c7d', 30]],
-	['zinc ore', ['#9c6690', 35]],
-	['nickel ore', ['#86c538', 40]],
+	['copper ore', ['./img/copper\ ore.png', 5]],
+	['iron ore', ['./img/iron\ ore.png', 10]],
+	['gold ore', ['./img/gold\ ore.png', 25]],
 	['wood', ['#ffc538', 50]],
 	
 	//smeltTarget items
-	['copper', ['#86c538', 50]],
-	['iron', ['#86c538', 100]],
-	['tin', ['#86c538', 150]],
-	['silver', ['#86c538', 200]],
-	['gold', ['#86c538', 250]],
-	['aluminum', ['#86c538', 300]],
-	['zinc', ['#86c538', 350]],
-	['nickel', ['#86c538', 400]],
+	['copper', ['./img/copper.png', 50]],
+	['iron', ['./img/iron.png', 100]],
+	['gold', ['./img/gold.png', 250]],
 	['coal', ['#ffc538', 500]],
 	
 	//crafted items
@@ -54,12 +44,7 @@ var materialInfo = new Map([ //[color, price, smelt]
 var minerals = new Map([
 	['copper ore', ['copper', 0]],
 	['iron ore', ['iron', 10]],
-	['tin ore', ['tin', 20]],
-	['silver ore', ['silver', 30]],
 	['gold ore', ['gold', 40]],
-	['aluminum ore', ['aluminum', 50]],
-	['zinc ore', ['zinc', 60]],
-	['nickel ore', ['nickel', 70]],
 	['wood', ['coal', 70]]
 ]);
 
@@ -93,10 +78,10 @@ function initiateGrid() {
     for (i=0; i<grid.length; i++) {
     	grid[i] = new Array(gridSize);
     	for (var j=0; j<grid[0].length; j++) {
-    		grid[i][j] = new tile(tileSize, i, j, 'none', 0);
+    		grid[i][j] = new tile(tileSize, i, j);
     	}
 	}
-	selectTile = new tile(tileSize, 11, 11, 'none', 0);
+	selectTile = new tile(tileSize, 11, 11);
 	selectTile.color = "#00000000";
 }
 
@@ -182,21 +167,17 @@ function resize(canvas) {
 	//canvas.setAttribute('style', 'border: 1px solid black; -ms-transform-origin: center top; -webkit-transform-origin: center top; -moz-transform-origin: center top; -o-transform-origin: center top; transform-origin: center top; -ms-transform: scale(' + scale + '); -webkit-transform: scale3d(' + scale + ', 1); -moz-transform: scale(' + scale + '); -o-transform: scale(' + scale + '); transform: scale(' + scale + ');');
 }
 
-function tile(size, x, y, unitType, direction, storage) { // ctx = myGameArea.context; paint shit
+function tile(size, x, y) { // ctx = myGameArea.context; paint shit
   this.x = x * size + 1;
   this.y = y * size + 1;
   this.size = size - 2;
-  this.unitType = unitType;
-  this.direction = direction;
+  this.unitType = 'none';
+  this.direction = 0;
   this.color = "#D3D3D3";
   
   this.cell = [x, y];
   
-  this.storage = storage;
-  
-  this.unitImg = new Image(320, 320);
-  this.unitImg.src = './img/mine.png';
-  
+  this.img = new Image(320, 320);
   
   this.update = function() { // individual updates for each unit type
     switch(this.unitType) {
@@ -218,7 +199,30 @@ function tile(size, x, y, unitType, direction, storage) { // ctx = myGameArea.co
   	  case 'furnace': 
   	    updateSmelt(this);
   	    break;
-  	}  
+  	}
+  	ctx = myGameArea.context;
+	
+	ctx.save(); // save current state
+	switch(this.direction % 4) {
+	  case 0: //up
+		ctx.translate(this.x, this.y);
+    	ctx.rotate(0/180*Math.PI);
+		break;
+	  case 2: //down
+		ctx.translate(this.x + this.size, this.y + this.size);
+    	ctx.rotate(180/180*Math.PI);
+		break;
+	  case 3: //left
+		ctx.translate(this.x, this.y + this.size);
+    	ctx.rotate(270/180*Math.PI);
+		break;
+	  case 1: //right
+		ctx.translate(this.x + this.size, this.y);
+    	ctx.rotate(90/180*Math.PI);
+		break;
+	}
+	ctx.drawImage(this.img, 0, 0, this.size, this.size);
+	ctx.restore(); 
   }
   
   this.hover = function(item) {
@@ -259,76 +263,41 @@ function updateMine(unit) { // ------------------ Mine ------------------
 	}
 
 	ctx = myGameArea.context;
-	ctx.save();
-	//ctx.rotate(90/180*Math.PI);
-	ctx.drawImage(unit.unitImg, unit.x, unit.y, unit.size, unit.size);
-	ctx.restore();
-//     ctx.fillStyle = '#ffb7d3';
-// 	ctx.fillRect(unit.x, unit.y, unit.size, unit.size);
-//	ctx.fillStyle = "red";
-// 	switch(unit.direction % 4) {
-// 	  case 0: //up
-// 		ctx.fillRect(unit.x+4, unit.y, unit.size-8, 7);
-// 		break;
-// 	  case 2: //down
-// 		ctx.fillRect(unit.x+4, unit.y + unit.size - 8, unit.size-8, 7);
-// 		break;
-// 	  case 3: //left
-// 		ctx.fillRect(unit.x, unit.y+4, 7, unit.size-8);
-// 		break;
-// 	  case 1: //right
-// 		ctx.fillRect(unit.x + unit.size - 7, unit.y+4, 7, unit.size-8);
-// 		break;
-// 	}
+	
+	ctx.save(); // save current state
+	switch(unit.direction % 4) {
+	  case 0: //up
+		ctx.translate(unit.x, unit.y);
+    	ctx.rotate(0/180*Math.PI);
+		break;
+	  case 2: //down
+		ctx.translate(unit.x + unit.size, unit.y + unit.size);
+    	ctx.rotate(180/180*Math.PI);
+		break;
+	  case 3: //left
+		ctx.translate(unit.x, unit.y + unit.size);
+    	ctx.rotate(270/180*Math.PI);
+		break;
+	  case 1: //right
+		ctx.translate(unit.x + unit.size, unit.y);
+    	ctx.rotate(90/180*Math.PI);
+		break;
+	}
+	ctx.drawImage(unit.img, 0, 0, unit.size, unit.size);
+	ctx.restore(); 
 }
 
 //function hoverMine(unit, item) { }
 
 function updateBelt(unit) { // ------------------ Belt ------------------
-	ctx = myGameArea.context;
-    ctx.fillStyle = '#b7d3ff';
-	ctx.fillRect(unit.x, unit.y, unit.size, unit.size);
-	ctx.fillStyle = "blue";
-	switch(unit.direction % 4) {
-	  case 0: //up
-		ctx.fillRect(unit.x+4, unit.y, unit.size-8, 7);
-		break;
-	  case 2: //down
-		ctx.fillRect(unit.x+4, unit.y + unit.size - 8, unit.size-8, 7);
-		break;
-	  case 3: //left
-		ctx.fillRect(unit.x, unit.y+4, 7, unit.size-8);
-		break;
-	  case 1: //right
-		ctx.fillRect(unit.x + unit.size - 7, unit.y+4, 7, unit.size-8);
-		break;
-	}
+
 }
 
 function hoverBelt(unit, item) {
 	item.currentDir = unit.direction;
 }
 
-function updateStore(unit) { // ------------------ store ------------------
-	//unit.offset = 0;
-	ctx = myGameArea.context;
-    ctx.fillStyle = '#b7ffd3';
-	ctx.fillRect(unit.x, unit.y, unit.size, unit.size);
-	ctx.fillStyle = "green";
-	switch(unit.direction % 4) {
-	  case 0: //up
-		ctx.fillRect(unit.x+4, unit.y, unit.size-8, 7);
-		break;
-	  case 2: //down
-		ctx.fillRect(unit.x+4, unit.y + unit.size - 8, unit.size-8, 7);
-		break;
-	  case 3: //left
-		ctx.fillRect(unit.x, unit.y+4, 7, unit.size-8);
-		break;
-	  case 1: //right
-		ctx.fillRect(unit.x + unit.size - 7, unit.y+4, 7, unit.size-8);
-		break;
-	}
+function updateStore(unit) { // ------------------ store ------------------ 
 }
 
 function hoverStore(unit, item) {
@@ -357,25 +326,6 @@ function updateCraft(unit) { // ------------------ fabricator ------------------
 			setCraftTarget(unit, unit.storage); // creates the delay
 			console.log('unit set');
 		}
-	}
-	
-	ctx = myGameArea.context;
-    ctx.fillStyle = '#EE82EE';
-	ctx.fillRect(unit.x, unit.y, unit.size, unit.size);
-	ctx.fillStyle = "#9400D3";
-	switch(unit.direction % 4) {
-	  case 0: //up
-		ctx.fillRect(unit.x+4, unit.y, unit.size-8, 7);
-		break;
-	  case 2: //down
-		ctx.fillRect(unit.x+4, unit.y + unit.size - 8, unit.size-8, 7);
-		break;
-	  case 3: //left
-		ctx.fillRect(unit.x, unit.y+4, 7, unit.size-8);
-		break;
-	  case 1: //right
-		ctx.fillRect(unit.x + unit.size - 7, unit.y+4, 7, unit.size-8);
-		break;
 	}
 }
 
@@ -498,7 +448,8 @@ function item(x, y, cell, material) {
 	this.y = y;
 	this.cell = [cell[0], cell[1]];
 	this.material = material;
-	this.color = materialInfo.get(material)[0];
+	this.img = new Image(320, 320);
+	this.img.src = materialInfo.get(material)[0];
 	
 	this.currentDir = grid[this.cell[0]][this.cell[1]].direction;
 	this.distance = 0;
@@ -506,9 +457,7 @@ function item(x, y, cell, material) {
 	
 	this.update = function() {
 		ctx = myGameArea.context;
-   		ctx.fillStyle = this.color;
-		ctx.fillRect(this.x+tileSize*0.2, this.y+tileSize*0.2, tileSize*0.6, tileSize*0.6);
-		//console.log("this cell: " + grid[this.cell[0]][this.cell[1]]);
+		ctx.drawImage(this.img, this.x + tileSize*0.1, this.y + tileSize*0.1, tileSize*0.8, tileSize*0.8);
 		if(this.currentDir == null){
 			if(this.distance > 100) {
 				addToTrash(this);
@@ -685,23 +634,35 @@ function setCraft(recipieID) {
 
 function setUnit(unitID) {
 	if(selectedUnit.unitType == unitID){ return rotateUnit(); }
-	else{ 
-		if(selectedUnit.unitType != 'none'){ lastDir = selectedUnit.direction; }
-		selectedUnit.unitType = unitID; 
-	}
-	selectedUnit.direction = lastDir;
+	
+	if(selectedUnit.unitType != 'none'){ lastDir = selectedUnit.direction; }
 	
 	switch(unitID){
-	  case 'mine':
-		selectedUnit.storage = 'copper ore';
-		break;
-	  case 'fabricator': 
-		selectedUnit.storage = new Map();
-		break;
-	  case 'furnace': 
-		selectedUnit.storage = new Map();
-		break;
+  	  case 'none':
+  	  	selectedUnit.img.src = './img/mine.png';
+    	break;  	
+  	  case 'mine': 
+  	  	selectedUnit.storage = 'copper ore';
+  	    selectedUnit.img.src = './img/mine.png';
+  	    break;
+  	  case 'conveyor':
+  	    selectedUnit.img.src = './img/conveyor.png';
+  	    break;
+  	  case 'market': 
+  	    selectedUnit.img.src = './img/market.png';
+  	    break;
+  	  case 'fabricator': 
+  	  	selectedUnit.storage = new Map();
+  	    selectedUnit.img.src = './img/mine.png';
+  	    break;
+  	  case 'furnace': 
+  	  	selectedUnit.storage = new Map();
+  	    selectedUnit.img.src = './img/mine.png';
+  	    break;
 	}
+	
+	selectedUnit.unitType = unitID; 
+	selectedUnit.direction = lastDir;
 	
 	selectTile.color = '#00000000';
 	
