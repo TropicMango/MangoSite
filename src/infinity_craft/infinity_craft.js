@@ -657,7 +657,7 @@ function setUnit(unitID) {
   	    break;
   	  case 'furnace': 
   	  	selectedUnit.storage = new Map();
-  	    selectedUnit.img.src = './img/mine.png';
+  	    selectedUnit.img.src = './img/furnace.png';
   	    break;
 	}
 	
