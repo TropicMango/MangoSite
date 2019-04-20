@@ -7,7 +7,7 @@ var selectTile, selectedUnit, selectedCord = [-1,-1];
 var removedList = [];
 
 var tileSize = 50;
-var gridSize = 10;
+var gridSize = 15;
 
 var mineSpeed = 200;//200
 var beltSpeed = 0.5;
